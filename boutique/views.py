@@ -189,6 +189,93 @@ def cart_count(request):
     return JsonResponse({'count': sum(cart.values())})
 
 
+# ============ COMMANDE EN LIGNE (lien partageable) ============
+
+def commander_en_ligne(request):
+    products = Product.objects.filter(actif=True)
+    categorie = request.GET.get('categorie', 'tout')
+
+    if categorie and categorie != 'tout':
+        products = products.filter(categorie=categorie)
+
+    context = {
+        'products': products,
+        'categorie_active': categorie,
+        'categories': [
+            ('tout', 'Tout'),
+            ('mode', 'Mode'),
+            ('accessoires', 'Accessoires'),
+            ('maison', 'Maison'),
+        ],
+        'payment_methods': Order.PAYMENT_CHOICES,
+    }
+    return render(request, 'boutique/commander_en_ligne.html', context)
+
+
+def commander_en_ligne_submit(request):
+    if request.method != 'POST':
+        return redirect('commander_en_ligne')
+
+    prenom_nom = request.POST.get('prenom_nom', '').strip()
+    telephone = request.POST.get('telephone', '').strip()
+    email = request.POST.get('email', '').strip()
+    adresse = request.POST.get('adresse', '').strip()
+    mode_paiement = request.POST.get('mode_paiement', '')
+    notes = request.POST.get('notes', '').strip()
+    produits_json = request.POST.get('produits', '{}')
+
+    if not all([prenom_nom, telephone, adresse, mode_paiement]):
+        messages.error(request, 'Veuillez remplir tous les champs obligatoires.')
+        return redirect('commander_en_ligne')
+
+    try:
+        produits_selectionnes = json.loads(produits_json)
+    except json.JSONDecodeError:
+        produits_selectionnes = {}
+
+    if not produits_selectionnes:
+        messages.error(request, 'Veuillez sélectionner au moins un produit.')
+        return redirect('commander_en_ligne')
+
+    order = Order.objects.create(
+        prenom_nom=prenom_nom,
+        telephone=telephone,
+        email=email or None,
+        adresse=adresse,
+        mode_paiement=mode_paiement,
+        notes=notes or None,
+    )
+
+    total = 0
+    for product_id, qty in produits_selectionnes.items():
+        qty = int(qty)
+        if qty <= 0:
+            continue
+        try:
+            product = Product.objects.get(pk=int(product_id), actif=True)
+            sous_total = product.prix * qty
+            total += sous_total
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                nom_produit=product.nom,
+                prix_unitaire=product.prix,
+                quantite=qty,
+            )
+        except Product.DoesNotExist:
+            continue
+
+    if total == 0:
+        order.delete()
+        messages.error(request, 'Aucun produit valide sélectionné.')
+        return redirect('commander_en_ligne')
+
+    order.total = total
+    order.save()
+
+    return redirect('order_confirmation', numero=order.numero)
+
+
 # ============ ADMIN VIEWS ============
 
 def admin_login(request):

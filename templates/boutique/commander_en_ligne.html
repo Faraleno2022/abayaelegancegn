@@ -1,0 +1,397 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander en ligne — Abaye Elégance</title>
+    <meta name="description" content="Commandez en ligne chez Abaye Elégance. Mode, accessoires et décoration de luxe en Guinée.">
+    <meta property="og:title" content="Abaye Elégance — Commander en ligne">
+    <meta property="og:description" content="Découvrez notre collection et passez votre commande directement en ligne. Livraison à Conakry et en Guinée.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .toast {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            animation: slideIn 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .product-card.selected { ring: 2px; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen">
+
+    <!-- Toast -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 {% if message.tags == 'error' %}border-red-500{% else %}border-green-500{% endif %}" onclick="this.remove()">
+        <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Header -->
+    <header class="bg-luxe-dark text-white">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center">
+            <div class="w-14 h-14 bg-luxe-gold/20 rounded-full mx-auto mb-3 flex items-center justify-center">
+                <span class="text-luxe-gold font-serif text-3xl font-bold">A</span>
+            </div>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold">Abaye Elégance</h1>
+            <p class="text-luxe-gold-light mt-2 text-sm sm:text-base">Commandez directement en ligne</p>
+            <div class="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
+                <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Livraison à Conakry</span>
+                <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Paiement sécurisé</span>
+                <span class="flex items-center gap-1"><i data-lucide="headphones" class="w-3.5 h-3.5"></i> Support WhatsApp</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Steps indicator -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-center gap-2 sm:gap-6">
+                <button onclick="showStep(1)" id="stepBtn1" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-luxe-gold text-white">
+                    <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">1</span>
+                    <span class="hidden sm:inline">Choisir</span>
+                </button>
+                <div class="w-8 h-0.5 bg-gray-200" id="stepLine1"></div>
+                <button onclick="showStep(2)" id="stepBtn2" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-gray-100 text-gray-500">
+                    <span class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">2</span>
+                    <span class="hidden sm:inline">Commander</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- STEP 1: Sélection des produits -->
+        <div id="step1">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-luxe-dark">Sélectionnez vos articles</h2>
+                    <p class="text-gray-500 text-sm mt-1">Cliquez sur les produits pour les ajouter à votre sélection</p>
+                </div>
+                <!-- Category filters -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    {% for key, label in categories %}
+                    <a href="{% url 'commander_en_ligne' %}{% if key != 'tout' %}?categorie={{ key }}{% endif %}"
+                       class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if categorie_active == key %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 hover:bg-gray-100 border border-gray-200{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                {% for product in products %}
+                <div class="product-card bg-white rounded-2xl shadow-sm border-2 border-transparent hover:shadow-lg transition-all cursor-pointer overflow-hidden group"
+                     id="card-{{ product.pk }}"
+                     onclick="toggleProduct({{ product.pk }}, '{{ product.nom|escapejs }}', {{ product.prix }})">
+                    <div class="relative h-40 sm:h-48 bg-gray-100 overflow-hidden">
+                        <img src="{{ product.get_image_url }}" alt="{{ product.nom }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% if product.badge %}
+                        <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-luxe-gold text-white">{{ product.badge }}</span>
+                        {% endif %}
+                        <!-- Selected overlay -->
+                        <div class="absolute inset-0 bg-luxe-gold/20 items-center justify-center hidden" id="overlay-{{ product.pk }}">
+                            <div class="w-10 h-10 bg-luxe-gold rounded-full flex items-center justify-center shadow-lg">
+                                <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 sm:p-4">
+                        <h3 class="font-medium text-luxe-dark text-sm leading-tight line-clamp-2 mb-1">{{ product.nom }}</h3>
+                        <p class="font-serif text-lg font-bold text-luxe-gold">{{ product.prix_formate }}</p>
+                        <!-- Quantity control (hidden until selected) -->
+                        <div class="mt-2 hidden" id="qty-{{ product.pk }}">
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="event.stopPropagation(); changeQty({{ product.pk }}, -1)" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i data-lucide="minus" class="w-4 h-4"></i>
+                                </button>
+                                <span class="text-sm font-bold text-luxe-dark w-8 text-center" id="qtyVal-{{ product.pk }}">1</span>
+                                <button type="button" onclick="event.stopPropagation(); changeQty({{ product.pk }}, 1)" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Selection summary + Next button -->
+            <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 transform translate-y-full transition-transform duration-300" id="selectionBar">
+                <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-luxe-dark"><span id="selectedCount">0</span> article(s) sélectionné(s)</p>
+                        <p class="text-xs text-gray-500">Total : <span class="font-bold text-luxe-gold" id="selectedTotal">0 GNF</span></p>
+                    </div>
+                    <button onclick="showStep(2)" class="bg-luxe-gold text-luxe-dark px-6 py-3 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center gap-2 shadow-sm">
+                        Passer la commande <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Formulaire de commande -->
+        <div id="step2" class="hidden">
+            <button onclick="showStep(1)" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-luxe-gold mb-6 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Modifier ma sélection
+            </button>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <!-- Order form -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                        <h2 class="font-serif text-2xl font-bold text-luxe-dark mb-6 flex items-center gap-2">
+                            <i data-lucide="user" class="w-6 h-6 text-luxe-gold"></i> Vos informations
+                        </h2>
+
+                        <form method="POST" action="{% url 'commander_en_ligne_submit' %}" id="orderForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="produits" id="produitsInput" value="{}">
+
+                            <div class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Prénom et Nom <span class="text-red-500">*</span></label>
+                                    <input type="text" name="prenom_nom" required placeholder="Votre nom complet"
+                                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Téléphone / WhatsApp <span class="text-red-500">*</span></label>
+                                        <input type="tel" name="telephone" required placeholder="+224 6XX XX XX XX"
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email <span class="text-gray-400">(optionnel)</span></label>
+                                        <input type="email" name="email" placeholder="votre@email.com"
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse de livraison <span class="text-red-500">*</span></label>
+                                    <textarea name="adresse" required rows="2" placeholder="Quartier, rue, repère..."
+                                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Mode de paiement <span class="text-red-500">*</span></label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        {% for key, label in payment_methods %}
+                                        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:border-luxe-gold transition-colors has-[:checked]:border-luxe-gold has-[:checked]:bg-luxe-gold/5">
+                                            <input type="radio" name="mode_paiement" value="{{ key }}" required class="accent-luxe-gold">
+                                            <span class="text-sm font-medium text-gray-700">{{ label }}</span>
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Notes <span class="text-gray-400">(optionnel)</span></label>
+                                    <textarea name="notes" rows="2" placeholder="Instructions spéciales, taille, couleur..."
+                                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                                </div>
+
+                                <button type="submit" id="submitBtn"
+                                    class="w-full bg-luxe-gold text-luxe-dark py-4 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 text-base shadow-sm">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                    Confirmer ma commande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order summary sidebar -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-20">
+                        <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-luxe-gold"></i> Récapitulatif
+                        </h3>
+                        <div id="summaryItems" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <!-- Filled by JS -->
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+                            <span class="font-serif text-lg font-bold text-luxe-dark">Total</span>
+                            <span class="font-serif text-xl font-bold text-luxe-gold" id="summaryTotal">0 GNF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-luxe-dark text-gray-400 py-8 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="font-serif text-lg font-bold text-white mb-1">Abaye Elégance</p>
+            <p class="text-sm">Mode, Accessoires & Décoration de Luxe</p>
+            <p class="text-xs mt-3">&copy; 2026 Abaye Elégance. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('.toast').forEach(t => setTimeout(() => t.remove(), 3000));
+
+        // State
+        const selectedProducts = {};
+        const productNames = {};
+        const productPrices = {};
+
+        function formatPrice(n) {
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' GNF';
+        }
+
+        function toggleProduct(id, name, price) {
+            productNames[id] = name;
+            productPrices[id] = price;
+
+            if (selectedProducts[id]) {
+                delete selectedProducts[id];
+                document.getElementById('card-' + id).classList.remove('border-luxe-gold', 'shadow-lg');
+                document.getElementById('card-' + id).classList.add('border-transparent');
+                document.getElementById('overlay-' + id).classList.add('hidden');
+                document.getElementById('overlay-' + id).classList.remove('flex');
+                document.getElementById('qty-' + id).classList.add('hidden');
+            } else {
+                selectedProducts[id] = 1;
+                document.getElementById('card-' + id).classList.add('border-luxe-gold', 'shadow-lg');
+                document.getElementById('card-' + id).classList.remove('border-transparent');
+                document.getElementById('overlay-' + id).classList.remove('hidden');
+                document.getElementById('overlay-' + id).classList.add('flex');
+                document.getElementById('qty-' + id).classList.remove('hidden');
+            }
+            updateUI();
+        }
+
+        function changeQty(id, delta) {
+            if (!selectedProducts[id]) return;
+            let newQty = (selectedProducts[id] || 1) + delta;
+            if (newQty < 1) {
+                toggleProduct(id, productNames[id], productPrices[id]);
+                return;
+            }
+            selectedProducts[id] = newQty;
+            document.getElementById('qtyVal-' + id).textContent = newQty;
+            updateUI();
+        }
+
+        function updateUI() {
+            const keys = Object.keys(selectedProducts);
+            const count = keys.reduce((s, k) => s + selectedProducts[k], 0);
+            const total = keys.reduce((s, k) => s + (productPrices[k] * selectedProducts[k]), 0);
+
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('selectedTotal').textContent = formatPrice(total);
+            document.getElementById('summaryTotal').textContent = formatPrice(total);
+
+            // Selection bar
+            const bar = document.getElementById('selectionBar');
+            if (count > 0) {
+                bar.classList.remove('translate-y-full');
+            } else {
+                bar.classList.add('translate-y-full');
+            }
+
+            // Summary items
+            const container = document.getElementById('summaryItems');
+            container.innerHTML = '';
+            keys.forEach(id => {
+                const qty = selectedProducts[id];
+                const subtotal = productPrices[id] * qty;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-luxe-dark truncate">${productNames[id]}</p>
+                            <p class="text-xs text-gray-400">${formatPrice(productPrices[id])} × ${qty}</p>
+                        </div>
+                        <p class="text-sm font-semibold text-luxe-dark ml-3">${formatPrice(subtotal)}</p>
+                    </div>`;
+            });
+
+            if (keys.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">Aucun article sélectionné</p>';
+            }
+
+            // Update hidden input
+            document.getElementById('produitsInput').value = JSON.stringify(selectedProducts);
+
+            lucide.createIcons();
+        }
+
+        function showStep(step) {
+            if (step === 2 && Object.keys(selectedProducts).length === 0) {
+                alert('Veuillez sélectionner au moins un article.');
+                return;
+            }
+            document.getElementById('step1').classList.toggle('hidden', step !== 1);
+            document.getElementById('step2').classList.toggle('hidden', step !== 2);
+
+            // Update step buttons
+            const btn1 = document.getElementById('stepBtn1');
+            const btn2 = document.getElementById('stepBtn2');
+            const line = document.getElementById('stepLine1');
+
+            if (step === 1) {
+                btn1.className = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-luxe-gold text-white';
+                btn2.className = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-gray-100 text-gray-500';
+                line.className = 'w-8 h-0.5 bg-gray-200';
+            } else {
+                btn1.className = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-green-100 text-green-700';
+                btn2.className = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all bg-luxe-gold text-white';
+                line.className = 'w-8 h-0.5 bg-luxe-gold';
+                updateUI();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Form submit validation
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            if (Object.keys(selectedProducts).length === 0) {
+                e.preventDefault();
+                alert('Veuillez sélectionner au moins un article.');
+                showStep(1);
+            }
+        });
+
+        // Init
+        updateUI();
+    </script>
+</body>
+</html>

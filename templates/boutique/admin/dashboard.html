@@ -10,6 +10,62 @@
     <p class="text-gray-500 mt-1">Vue d'ensemble de votre activité</p>
 </div>
 
+<!-- Lien de commande partageable -->
+<div class="bg-gradient-to-r from-luxe-dark to-luxe-navy rounded-2xl p-6 sm:p-8 mb-10 text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-luxe-gold/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+    <div class="relative">
+        <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 bg-luxe-gold/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i data-lucide="share-2" class="w-5 h-5 text-luxe-gold"></i>
+            </div>
+            <div>
+                <h2 class="font-serif text-xl font-bold">Lien de commande en ligne</h2>
+                <p class="text-sm text-gray-400 mt-0.5">Partagez ce lien sur les réseaux sociaux pour recevoir des commandes directement</p>
+            </div>
+        </div>
+
+        <!-- Link display -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5">
+            <div class="flex-1 bg-white/10 rounded-xl px-4 py-3 flex items-center gap-2 border border-white/10">
+                <i data-lucide="link" class="w-4 h-4 text-luxe-gold flex-shrink-0"></i>
+                <span class="text-sm font-mono truncate" id="shareLink">{{ request.scheme }}://{{ request.get_host }}/commander-en-ligne/</span>
+            </div>
+            <button onclick="copyLink()" id="copyBtn" class="bg-luxe-gold text-luxe-dark px-5 py-3 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                <i data-lucide="copy" class="w-4 h-4"></i> Copier le lien
+            </button>
+        </div>
+
+        <!-- Share buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs text-gray-400 font-medium">Partager sur :</span>
+
+            <!-- WhatsApp -->
+            <a id="shareWhatsApp" href="#" target="_blank"
+               class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+            </a>
+
+            <!-- Facebook -->
+            <a id="shareFacebook" href="#" target="_blank"
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                <i data-lucide="facebook" class="w-4 h-4"></i> Facebook
+            </a>
+
+            <!-- Twitter / X -->
+            <a id="shareTwitter" href="#" target="_blank"
+               class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                <i data-lucide="twitter" class="w-4 h-4"></i> X / Twitter
+            </a>
+
+            <!-- Telegram -->
+            <a id="shareTelegram" href="#" target="_blank"
+               class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                <i data-lucide="send" class="w-4 h-4"></i> Telegram
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- KPI Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
     <!-- Total Orders -->
@@ -162,4 +218,33 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const shareLink = document.getElementById('shareLink').textContent.trim();
+    const shareText = encodeURIComponent('✨ Découvrez notre collection et commandez en ligne chez Abaye Elégance ! Mode, Accessoires & Décoration de Luxe 🛍️');
+
+    // Set share URLs
+    document.getElementById('shareWhatsApp').href = 'https://wa.me/?text=' + shareText + '%0A' + encodeURIComponent(shareLink);
+    document.getElementById('shareFacebook').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareLink);
+    document.getElementById('shareTwitter').href = 'https://twitter.com/intent/tweet?text=' + shareText + '&url=' + encodeURIComponent(shareLink);
+    document.getElementById('shareTelegram').href = 'https://t.me/share/url?url=' + encodeURIComponent(shareLink) + '&text=' + shareText;
+
+    function copyLink() {
+        navigator.clipboard.writeText(shareLink).then(() => {
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copié !';
+            btn.classList.add('bg-green-500', 'text-white');
+            btn.classList.remove('bg-luxe-gold', 'text-luxe-dark');
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copier le lien';
+                btn.classList.remove('bg-green-500', 'text-white');
+                btn.classList.add('bg-luxe-gold', 'text-luxe-dark');
+                lucide.createIcons();
+            }, 2000);
+        });
+    }
+</script>
 {% endblock %}

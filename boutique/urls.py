@@ -12,6 +12,10 @@ urlpatterns = [
     path('confirmation/<str:numero>/', views.order_confirmation, name='order_confirmation'),
     path('api/cart-count/', views.cart_count, name='cart_count'),
 
+    # Commande en ligne (lien partageable)
+    path('commander-en-ligne/', views.commander_en_ligne, name='commander_en_ligne'),
+    path('commander-en-ligne/valider/', views.commander_en_ligne_submit, name='commander_en_ligne_submit'),
+
     # Admin
     path('admin-panel/login/', views.admin_login, name='admin_login'),
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
