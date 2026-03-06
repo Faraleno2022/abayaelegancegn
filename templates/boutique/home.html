@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Abaye Elégance — Boutique Premium{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-luxe-dark overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-luxe-darker via-luxe-dark to-luxe-navy"></div>
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-luxe-gold rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-luxe-gold rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Text -->
+            <div class="text-center lg:text-left">
+                <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-4">Collection Premium</p>
+                <h1 class="font-serif text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+                    L'Élégance<br>
+                    <span class="text-luxe-gold">Redéfinie</span>
+                </h1>
+                <p class="text-gray-300 text-lg md:text-xl leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
+                    Découvrez notre collection exclusive de produits soigneusement sélectionnés pour sublimer votre quotidien.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
+                    <a href="#collection" class="bg-luxe-gold hover:bg-luxe-gold-light text-luxe-dark font-semibold px-8 py-4 rounded-full transition-all duration-300 text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        Explorer la collection
+                    </a>
+                    <div class="flex items-center justify-center gap-3">
+                        <button onclick="shareWhatsApp('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-green-500/20 text-white hover:text-green-400 flex items-center justify-center transition-all" title="Partager sur WhatsApp">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="shareFacebook(window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500/20 text-white hover:text-blue-400 flex items-center justify-center transition-all" title="Partager sur Facebook">
+                            <i data-lucide="facebook" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="shareTwitter('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-sky-500/20 text-white hover:text-sky-400 flex items-center justify-center transition-all" title="Partager sur Twitter">
+                            <i data-lucide="twitter" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="flex items-center gap-8 justify-center lg:justify-start">
+                    <div class="text-center">
+                        <p class="font-serif text-3xl font-bold text-luxe-gold">{{ total_products }}</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Produits</p>
+                    </div>
+                    <div class="w-px h-10 bg-gray-600"></div>
+                    <div class="text-center">
+                        <p class="font-serif text-3xl font-bold text-luxe-gold">3</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Catégories</p>
+                    </div>
+                    <div class="w-px h-10 bg-gray-600"></div>
+                    <div class="text-center">
+                        <p class="font-serif text-3xl font-bold text-luxe-gold">100%</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Authentique</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Image Grid -->
+            <div class="hidden lg:grid grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-2xl p-8 h-48 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="shirt" class="w-16 h-16 text-luxe-gold/60 group-hover:text-luxe-gold transition-colors"></i>
+                    </div>
+                    <div class="bg-gradient-to-br from-luxe-gold/10 to-transparent rounded-2xl p-8 h-64 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="gem" class="w-20 h-20 text-luxe-gold/40 group-hover:text-luxe-gold transition-colors"></i>
+                    </div>
+                </div>
+                <div class="space-y-4 pt-8">
+                    <div class="bg-gradient-to-br from-luxe-gold/15 to-transparent rounded-2xl p-8 h-64 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="crown" class="w-20 h-20 text-luxe-gold/50 group-hover:text-luxe-gold transition-colors"></i>
+                    </div>
+                    <div class="bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-2xl p-8 h-48 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="home" class="w-16 h-16 text-luxe-gold/60 group-hover:text-luxe-gold transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Collection Section -->
+<section id="collection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+        <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-2">Notre Sélection</p>
+        <h2 class="font-serif text-4xl md:text-5xl font-bold text-luxe-dark mb-4">La Collection</h2>
+        <p class="text-gray-500 max-w-2xl mx-auto">Des pièces uniques sélectionnées avec soin pour vous offrir le meilleur de l'élégance.</p>
+    </div>
+
+    <!-- Search Results Info -->
+    {% if search_query %}
+    <div class="mb-8 flex items-center justify-between bg-white rounded-xl px-6 py-4 shadow-sm">
+        <p class="text-sm text-gray-600">
+            <span class="font-semibold">{{ products|length }}</span> résultat(s) pour "<span class="font-semibold text-luxe-dark">{{ search_query }}</span>"
+        </p>
+        <a href="{% url 'home' %}" class="text-sm text-luxe-gold hover:underline flex items-center gap-1">
+            <i data-lucide="x" class="w-4 h-4"></i> Réinitialiser
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Category Filters -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+        {% for key, label in categories %}
+        <a href="{% url 'home' %}?categorie={{ key }}{% if search_query %}&q={{ search_query }}{% endif %}#collection"
+           class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300
+           {% if categorie_active == key %}
+               bg-luxe-dark text-white shadow-lg shadow-luxe-dark/20
+           {% else %}
+               bg-white text-gray-600 hover:bg-luxe-dark hover:text-white shadow-sm
+           {% endif %}">
+            {{ label }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="cascade-item product-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group"
+             style="animation-delay: {{ forloop.counter0|divisibleby:1 }}{% widthratio forloop.counter0 10 1 %}s">
+            <!-- Product Image -->
+            <a href="{% url 'product_detail' product.pk %}" class="block relative overflow-hidden" style="aspect-ratio: 3/4;">
+                <img src="{{ product.get_image_url }}" alt="{{ product.nom }}"
+                     class="w-full h-full object-cover transition-transform duration-700"
+                     loading="lazy">
+
+                <!-- Badge -->
+                {% if product.badge %}
+                <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-white text-xs font-semibold
+                    badge-{{ product.badge|lower }}">
+                    {{ product.badge }}
+                </span>
+                {% endif %}
+
+                <!-- Hover Overlay -->
+                <div class="product-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex items-center justify-center gap-3">
+                    <button onclick="event.preventDefault(); addToCartAjax({{ product.pk }})"
+                            class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-luxe-dark hover:bg-luxe-gold hover:text-white transition-all transform hover:scale-110"
+                            title="Ajouter au panier">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="event.preventDefault(); shareWhatsApp('{{ product.nom }}', '{{ product.prix_formate }}', window.location.origin + '{% url 'product_detail' product.pk %}')"
+                            class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-luxe-dark hover:bg-green-500 hover:text-white transition-all transform hover:scale-110"
+                            title="Partager sur WhatsApp">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </a>
+
+            <!-- Product Info -->
+            <div class="p-5">
+                <p class="text-xs text-luxe-gold uppercase tracking-wider font-semibold mb-1">{{ product.get_categorie_display }}</p>
+                <a href="{% url 'product_detail' product.pk %}">
+                    <h3 class="font-serif text-lg font-bold text-luxe-dark mb-2 group-hover:text-luxe-gold transition-colors line-clamp-1">{{ product.nom }}</h3>
+                </a>
+
+                <!-- Stars -->
+                <div class="flex items-center gap-0.5 mb-3">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= product.note %}
+                        <svg class="w-3.5 h-3.5 star-filled" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        {% else %}
+                        <svg class="w-3.5 h-3.5 star-empty" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <p class="font-semibold text-luxe-dark">{{ product.prix_formate }}</p>
+                    <button onclick="addToCartAjax({{ product.pk }})"
+                            class="text-xs bg-luxe-dark text-white px-4 py-2 rounded-full hover:bg-luxe-gold transition-colors duration-300">
+                        + Panier
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+        <i data-lucide="search-x" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+        <h3 class="font-serif text-2xl font-bold text-gray-400 mb-2">Aucun produit trouvé</h3>
+        <p class="text-gray-400 mb-6">Essayez avec d'autres mots-clés ou explorez nos catégories.</p>
+        <a href="{% url 'home' %}" class="inline-flex items-center gap-2 bg-luxe-dark text-white px-6 py-3 rounded-full hover:bg-luxe-gold transition-colors">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Voir tous les produits
+        </a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Cascade animation with intersection observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationDelay = `${index * 0.1}s`;
+                entry.target.classList.add('cascade-item');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.product-card').forEach(card => observer.observe(card));
+
+    // Re-initialize lucide icons after page load
+    lucide.createIcons();
+</script>
+{% endblock %}

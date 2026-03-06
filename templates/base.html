@@ -1,0 +1,419 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Abaye Elégance{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Abaye Elégance - Boutique en ligne de produits premium. Mode, Accessoires et Maison.{% endblock %}">
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="{% block og_title %}Abaye Elégance{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Boutique en ligne de produits premium{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand': {
+                            50: '#fdf8f0',
+                            100: '#f9eddb',
+                            200: '#f2d7b5',
+                            300: '#e9bc86',
+                            400: '#df9a55',
+                            500: '#d67d33',
+                            600: '#c86528',
+                            700: '#a64d22',
+                            800: '#853f22',
+                            900: '#6c351e',
+                        },
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+        .font-sans { font-family: 'DM Sans', sans-serif; }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideInRight 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Product card hover */
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Cascade animation */
+        .cascade-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cascadeIn 0.6s ease-out forwards;
+        }
+        @keyframes cascadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Mobile menu animation */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+
+        /* Badge styles */
+        .badge-nouveau { background: #22c55e; }
+        .badge-bestseller { background: #f59e0b; }
+        .badge-exclusif { background: #8b5cf6; }
+        .badge-premium { background: #c8a45c; }
+
+        /* Star rating */
+        .star-filled { color: #f59e0b; }
+        .star-empty { color: #d1d5db; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+
+    <!-- Toast Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 {% if message.tags == 'success' %}border-green-500{% elif message.tags == 'error' %}border-red-500{% else %}border-blue-500{% endif %}" onclick="this.remove()">
+        {% if message.tags == 'success' %}
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+        {% elif message.tags == 'error' %}
+        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
+        {% else %}
+        <i data-lucide="info" class="w-5 h-5 text-blue-500"></i>
+        {% endif %}
+        <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% block navbar %}
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+
+                <!-- Logo -->
+                <a href="{% url 'home' %}" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-luxe-dark rounded-full flex items-center justify-center">
+                        <span class="text-luxe-gold font-serif text-xl font-bold">A</span>
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-2xl font-bold text-luxe-dark leading-none tracking-wide">Abaye</h1>
+                        <p class="text-[10px] uppercase tracking-[0.3em] text-luxe-gold font-semibold -mt-0.5">Élégance</p>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="{% url 'home' %}" class="text-sm font-medium text-gray-700 hover:text-luxe-gold transition-colors">Accueil</a>
+                    <a href="{% url 'home' %}?categorie=tout#collection" class="text-sm font-medium text-gray-700 hover:text-luxe-gold transition-colors">Collection</a>
+                    <a href="{% url 'about' %}" class="text-sm font-medium text-gray-700 hover:text-luxe-gold transition-colors">À Propos</a>
+                    <a href="{% url 'about' %}#contact" class="text-sm font-medium text-gray-700 hover:text-luxe-gold transition-colors">Contact</a>
+                </div>
+
+                <!-- Search + Cart + Admin -->
+                <div class="hidden md:flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="relative" id="searchContainer">
+                        <form method="GET" action="{% url 'home' %}" class="flex items-center">
+                            <div class="relative">
+                                <input type="text" name="q" value="{{ search_query|default:'' }}"
+                                    placeholder="Rechercher..."
+                                    class="w-0 focus:w-56 transition-all duration-300 bg-gray-100 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30"
+                                    id="searchInput">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onclick="toggleSearch()"></i>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Cart -->
+                    <a href="{% url 'cart' %}" class="relative p-2 text-gray-700 hover:text-luxe-gold transition-colors">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        {% if cart_count > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-luxe-gold text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center" id="cartBadge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Admin -->
+                    <a href="{% url 'admin_login' %}" class="p-2 text-gray-400 hover:text-luxe-gold transition-colors" title="Espace Admin">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Mobile: Cart + Hamburger -->
+                <div class="flex md:hidden items-center gap-3">
+                    <a href="{% url 'cart' %}" class="relative p-2 text-gray-700">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        {% if cart_count > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-luxe-gold text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                    <button onclick="toggleMobileMenu()" class="p-2 text-gray-700" id="menuBtn">
+                        <i data-lucide="menu" class="w-6 h-6" id="menuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu md:hidden bg-white border-t border-gray-100" id="mobileMenu">
+            <div class="px-4 py-4 space-y-3">
+                <form method="GET" action="{% url 'home' %}">
+                    <div class="relative">
+                        <input type="text" name="q" value="{{ search_query|default:'' }}"
+                            placeholder="Rechercher un produit..."
+                            class="w-full bg-gray-100 rounded-full py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </form>
+                <a href="{% url 'home' %}" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Accueil</a>
+                <a href="{% url 'home' %}?categorie=tout#collection" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Collection</a>
+                <a href="{% url 'about' %}" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">À Propos</a>
+                <a href="{% url 'about' %}#contact" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Contact</a>
+                <a href="{% url 'admin_login' %}" class="block px-4 py-3 text-sm font-medium text-gray-400 hover:bg-gray-50 rounded-lg">
+                    <span class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4"></i> Admin</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main class="pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% block footer %}
+    <footer class="bg-luxe-dark text-gray-300 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Brand -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 bg-luxe-gold/20 rounded-full flex items-center justify-center">
+                            <span class="text-luxe-gold font-serif text-xl font-bold">A</span>
+                        </div>
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-white leading-none">Abaye</h3>
+                            <p class="text-[9px] uppercase tracking-[0.3em] text-luxe-gold">Élégance</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">Votre destination pour des produits premium soigneusement sélectionnés.</p>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-serif text-lg font-semibold text-white mb-4">Navigation</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{% url 'home' %}" class="hover:text-luxe-gold transition-colors">Accueil</a></li>
+                        <li><a href="{% url 'home' %}#collection" class="hover:text-luxe-gold transition-colors">Collection</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-luxe-gold transition-colors">À Propos</a></li>
+                        <li><a href="{% url 'cart' %}" class="hover:text-luxe-gold transition-colors">Panier</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="font-serif text-lg font-semibold text-white mb-4">Catégories</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{% url 'home' %}?categorie=mode" class="hover:text-luxe-gold transition-colors">Mode</a></li>
+                        <li><a href="{% url 'home' %}?categorie=accessoires" class="hover:text-luxe-gold transition-colors">Accessoires</a></li>
+                        <li><a href="{% url 'home' %}?categorie=maison" class="hover:text-luxe-gold transition-colors">Maison</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-serif text-lg font-semibold text-white mb-4">Contact</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4 text-luxe-gold"></i>
+                            <span>+224 622 00 00 00</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4 text-luxe-gold"></i>
+                            <span>contact@abaye-elegance.com</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-luxe-gold"></i>
+                            <span>Conakry, Guinée</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-gray-500">&copy; 2026 Abaye Elégance. Tous droits réservés.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="text-gray-500 hover:text-luxe-gold transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-luxe-gold transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-luxe-gold transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        }
+
+        // Desktop search toggle
+        function toggleSearch() {
+            const input = document.getElementById('searchInput');
+            if (input.classList.contains('w-0')) {
+                input.classList.remove('w-0');
+                input.classList.add('w-56');
+                input.focus();
+            } else {
+                input.classList.remove('w-56');
+                input.classList.add('w-0');
+            }
+        }
+
+        // Auto-dismiss toasts
+        document.querySelectorAll('.toast').forEach(toast => {
+            setTimeout(() => toast.remove(), 3000);
+        });
+
+        // AJAX add to cart
+        function addToCartAjax(productId, quantity = 1) {
+            const csrfToken = '{{ csrf_token }}';
+            fetch(`/panier/ajouter/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: `quantity=${quantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart badge
+                    let badge = document.getElementById('cartBadge');
+                    if (badge) {
+                        badge.textContent = data.cart_count;
+                    } else {
+                        // Create badge if not exists
+                        const cartLinks = document.querySelectorAll('a[href*="panier"]');
+                        cartLinks.forEach(link => {
+                            if (!link.querySelector('.bg-luxe-gold')) {
+                                const span = document.createElement('span');
+                                span.className = 'absolute -top-1 -right-1 bg-luxe-gold text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center';
+                                span.id = 'cartBadge';
+                                span.textContent = data.cart_count;
+                                link.appendChild(span);
+                            }
+                        });
+                    }
+
+                    // Show toast
+                    showToast(data.message, 'success');
+                }
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const borderColor = type === 'success' ? 'border-green-500' : 'border-red-500';
+            const iconColor = type === 'success' ? 'text-green-500' : 'text-red-500';
+            toast.className = `toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 ${borderColor}`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-sm font-medium">${message}</span>
+            `;
+            toast.onclick = () => toast.remove();
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Social sharing functions
+        function shareWhatsApp(name, price, url) {
+            const text = `Découvrez "${name}" à ${price} sur Abaye Elégance ! ${url}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareFacebook(url) {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareTwitter(name, price, url) {
+            const text = `Découvrez "${name}" à ${price} sur @AbayeElegance !`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Lien copié dans le presse-papier !', 'success');
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

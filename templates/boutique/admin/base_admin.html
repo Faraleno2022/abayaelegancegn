@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} — Abaye Elégance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideInRight 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen">
+    <!-- Toast Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 {% if message.tags == 'success' %}border-green-500{% elif message.tags == 'error' %}border-red-500{% else %}border-blue-500{% endif %}" onclick="this.remove()">
+        <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Top Bar -->
+    <nav class="bg-luxe-dark text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-luxe-gold/20 rounded-full flex items-center justify-center">
+                            <span class="text-luxe-gold font-serif text-lg font-bold">A</span>
+                        </div>
+                        <span class="font-serif text-lg font-bold hidden sm:inline">Abaye Elégance</span>
+                        <span class="text-xs bg-luxe-gold/20 text-luxe-gold px-2 py-0.5 rounded-full font-semibold hidden sm:inline">Admin</span>
+                    </a>
+
+                    <div class="hidden md:flex items-center gap-4">
+                        <a href="{% url 'admin_dashboard' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_dashboard %}{% endblock %}">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Tableau de bord
+                        </a>
+                        <a href="{% url 'admin_orders' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_orders %}{% endblock %}">
+                            <i data-lucide="package" class="w-4 h-4"></i> Commandes
+                        </a>
+                        <a href="{% url 'admin_products' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_products %}{% endblock %}">
+                            <i data-lucide="box" class="w-4 h-4"></i> Produits
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'home' %}" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition-colors" target="_blank">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Voir le site</span>
+                    </a>
+                    <a href="{% url 'admin_logout' %}" class="text-sm text-gray-400 hover:text-red-400 flex items-center gap-1 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Déconnexion</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div class="md:hidden bg-white border-b border-gray-200">
+        <div class="flex items-center gap-2 px-4 py-2">
+            <a href="{% url 'admin_dashboard' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_dashboard %}text-gray-500{% endblock %}">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 mx-auto mb-1"></i> Dashboard
+            </a>
+            <a href="{% url 'admin_orders' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_orders %}text-gray-500{% endblock %}">
+                <i data-lucide="package" class="w-4 h-4 mx-auto mb-1"></i> Commandes
+            </a>
+            <a href="{% url 'admin_products' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_products %}text-gray-500{% endblock %}">
+                <i data-lucide="box" class="w-4 h-4 mx-auto mb-1"></i> Produits
+            </a>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('.toast').forEach(t => setTimeout(() => t.remove(), 3000));
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

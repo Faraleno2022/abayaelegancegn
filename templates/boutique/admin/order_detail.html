@@ -1,0 +1,150 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}Commande {{ order.numero }}{% endblock %}
+{% block nav_orders %}bg-white/10 text-white{% endblock %}
+
+{% block content %}
+<!-- Back -->
+<a href="{% url 'admin_orders' %}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-luxe-gold mb-6 transition-colors">
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour aux commandes
+</a>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Order Header -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h1 class="font-serif text-2xl font-bold text-luxe-dark">{{ order.numero }}</h1>
+                        {% if order.statut == 'nouvelle' %}
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-amber-100 text-amber-700">
+                            <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span> Nouvelle
+                        </span>
+                        {% elif order.statut == 'en_cours' %}
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span> En cours
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-green-100 text-green-700">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span> Terminée
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">Passée le {{ order.date_commande|date:"d/m/Y à H:i" }}</p>
+                </div>
+
+                <!-- Update Status -->
+                <form method="POST" action="{% url 'admin_update_status' order.pk %}" class="flex items-center gap-2">
+                    {% csrf_token %}
+                    <select name="statut" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                        <option value="nouvelle" {% if order.statut == 'nouvelle' %}selected{% endif %}>Nouvelle</option>
+                        <option value="en_cours" {% if order.statut == 'en_cours' %}selected{% endif %}>En cours</option>
+                        <option value="terminee" {% if order.statut == 'terminee' %}selected{% endif %}>Terminée</option>
+                    </select>
+                    <button type="submit" class="bg-luxe-dark text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-luxe-gold transition-colors">
+                        Mettre à jour
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="font-serif text-lg font-bold text-luxe-dark">Articles commandés</h2>
+            </div>
+            <div class="divide-y divide-gray-100">
+                {% for item in order.items.all %}
+                <div class="p-6 flex items-center gap-4">
+                    {% if item.product %}
+                    <div class="w-16 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                        <img src="{{ item.product.get_image_url }}" alt="{{ item.nom_produit }}" class="w-full h-full object-cover">
+                    </div>
+                    {% else %}
+                    <div class="w-16 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="image-off" class="w-6 h-6 text-gray-300"></i>
+                    </div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-medium text-luxe-dark">{{ item.nom_produit }}</h3>
+                        <p class="text-sm text-gray-400">{{ item.prix_unitaire|floatformat:0 }} GNF × {{ item.quantite }}</p>
+                    </div>
+                    <p class="font-semibold text-luxe-dark">{{ item.sous_total_formate }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="p-6 bg-gray-50 flex justify-between items-center">
+                <span class="font-serif text-lg font-bold text-luxe-dark">Total</span>
+                <span class="font-serif text-2xl font-bold text-luxe-gold">{{ order.total_formate }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+        <!-- Client Info -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="font-serif text-lg font-bold text-luxe-dark mb-4">Informations client</h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Nom complet</p>
+                    <p class="font-medium text-luxe-dark">{{ order.prenom_nom }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Téléphone</p>
+                    <p class="font-medium text-luxe-dark">{{ order.telephone }}</p>
+                </div>
+                {% if order.email %}
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Email</p>
+                    <p class="font-medium text-luxe-dark">{{ order.email }}</p>
+                </div>
+                {% endif %}
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Adresse de livraison</p>
+                    <p class="font-medium text-luxe-dark">{{ order.adresse }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Mode de paiement</p>
+                    <p class="font-medium text-luxe-dark">{{ order.get_mode_paiement_display }}</p>
+                </div>
+                {% if order.notes %}
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Notes</p>
+                    <p class="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">{{ order.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Contact Client -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="font-serif text-lg font-bold text-luxe-dark mb-4">Contacter le client</h2>
+            <div class="space-y-3">
+                <a href="https://wa.me/{{ order.telephone|cut:' '|cut:'+' }}?text=Bonjour {{ order.prenom_nom }}, concernant votre commande {{ order.numero }} chez Abaye Elégance. "
+                   target="_blank"
+                   class="w-full flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition-colors text-sm font-medium">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    Contacter via WhatsApp
+                </a>
+
+                {% if order.email %}
+                <a href="mailto:{{ order.email }}?subject=Commande {{ order.numero }} - Abaye Elégance&body=Bonjour {{ order.prenom_nom }},%0A%0AConcernant votre commande {{ order.numero }}..."
+                   class="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors text-sm font-medium">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    Envoyer un email
+                </a>
+                {% endif %}
+
+                <a href="tel:{{ order.telephone|cut:' ' }}"
+                   class="w-full flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-colors text-sm font-medium">
+                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    Appeler le client
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

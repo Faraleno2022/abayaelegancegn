@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}À Propos — Abaye Elégance{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="bg-luxe-dark py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-4">Notre Histoire</p>
+        <h1 class="font-serif text-5xl md:text-6xl font-bold text-white mb-6">À Propos de Nous</h1>
+        <p class="text-gray-300 text-lg max-w-2xl mx-auto">Découvrez l'histoire, les valeurs et l'équipe derrière Abaye Elégance.</p>
+    </div>
+</section>
+
+<!-- Notre Histoire -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+            <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-3">Notre Parcours</p>
+            <h2 class="font-serif text-4xl font-bold text-luxe-dark mb-6">Une passion pour l'élégance</h2>
+            <p class="text-gray-600 leading-relaxed mb-4">
+                Fondée avec la conviction que chaque personne mérite d'accéder à des produits de qualité exceptionnelle,
+                Abaye Elégance est née de la passion pour l'artisanat et le design raffiné.
+            </p>
+            <p class="text-gray-600 leading-relaxed mb-8">
+                Notre boutique propose une sélection rigoureuse de vêtements, accessoires et articles pour la maison,
+                choisis pour leur qualité, leur authenticité et leur élégance intemporelle. Chaque produit raconte une
+                histoire et incarne notre engagement envers l'excellence.
+            </p>
+
+            <!-- Chiffres clés -->
+            <div class="grid grid-cols-3 gap-6">
+                <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">2024</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Fondation</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">500+</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Clients</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">100%</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Satisfaits</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gradient-to-br from-luxe-gold/10 to-luxe-gold/5 rounded-3xl p-12 flex items-center justify-center" style="aspect-ratio: 4/5;">
+            <div class="text-center">
+                <div class="w-32 h-32 bg-luxe-gold/20 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <i data-lucide="crown" class="w-16 h-16 text-luxe-gold"></i>
+                </div>
+                <h3 class="font-serif text-3xl font-bold text-luxe-dark mb-2">Abaye Elégance</h3>
+                <p class="text-gray-500 text-sm">L'élégance à portée de main</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nos Valeurs -->
+<section class="bg-luxe-dark py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-3">Ce qui nous définit</p>
+            <h2 class="font-serif text-4xl font-bold text-white">Nos Valeurs</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-luxe-gold/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:bg-luxe-gold/30 transition-colors">
+                    <i data-lucide="award" class="w-8 h-8 text-luxe-gold"></i>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-white mb-3">Qualité</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Sélection rigoureuse des meilleurs produits pour garantir une qualité irréprochable.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-luxe-gold/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:bg-luxe-gold/30 transition-colors">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-luxe-gold"></i>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-white mb-3">Authenticité</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Produits originaux et certifiés, garantissant authenticité et traçabilité.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-luxe-gold/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:bg-luxe-gold/30 transition-colors">
+                    <i data-lucide="heart-handshake" class="w-8 h-8 text-luxe-gold"></i>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-white mb-3">Service Client</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Accompagnement personnalisé et écoute attentive pour chaque client.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-luxe-gold/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:bg-luxe-gold/30 transition-colors">
+                    <i data-lucide="truck" class="w-8 h-8 text-luxe-gold"></i>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-white mb-3">Accessibilité</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Livraison rapide et fiable dans toute la région pour votre confort.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Notre Équipe -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center mb-16">
+        <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-3">Les visages derrière la marque</p>
+        <h2 class="font-serif text-4xl font-bold text-luxe-dark">Notre Équipe</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center group">
+            <div class="w-40 h-40 bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:from-luxe-gold/30 transition-all">
+                <i data-lucide="user" class="w-16 h-16 text-luxe-gold/60"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-luxe-dark mb-1">Abaye</h3>
+            <p class="text-luxe-gold text-sm font-medium mb-3">Fondateur & Directeur</p>
+            <p class="text-gray-500 text-sm max-w-xs mx-auto">Visionnaire passionné par l'élégance et l'entrepreneuriat, à l'origine du concept Abaye Elégance.</p>
+        </div>
+
+        <div class="text-center group">
+            <div class="w-40 h-40 bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:from-luxe-gold/30 transition-all">
+                <i data-lucide="user" class="w-16 h-16 text-luxe-gold/60"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-luxe-dark mb-1">Mariama</h3>
+            <p class="text-luxe-gold text-sm font-medium mb-3">Responsable Collection</p>
+            <p class="text-gray-500 text-sm max-w-xs mx-auto">Experte en tendances et curatrice de notre collection, avec un œil infaillible pour le style.</p>
+        </div>
+
+        <div class="text-center group">
+            <div class="w-40 h-40 bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:from-luxe-gold/30 transition-all">
+                <i data-lucide="user" class="w-16 h-16 text-luxe-gold/60"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-luxe-dark mb-1">Ibrahim</h3>
+            <p class="text-luxe-gold text-sm font-medium mb-3">Service Client</p>
+            <p class="text-gray-500 text-sm max-w-xs mx-auto">Dévoué à la satisfaction client, il assure un suivi personnalisé de chaque commande.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="bg-gray-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-3">Restons en contact</p>
+            <h2 class="font-serif text-4xl font-bold text-luxe-dark">Contactez-Nous</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Info -->
+            <div class="space-y-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-luxe-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="map-pin" class="w-6 h-6 text-luxe-gold"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxe-dark mb-1">Adresse</h3>
+                        <p class="text-gray-500">Quartier Kaloum, Conakry, Guinée</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-luxe-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="phone" class="w-6 h-6 text-luxe-gold"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxe-dark mb-1">Téléphone / WhatsApp</h3>
+                        <p class="text-gray-500">+224 622 00 00 00</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-luxe-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="mail" class="w-6 h-6 text-luxe-gold"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxe-dark mb-1">Email</h3>
+                        <p class="text-gray-500">contact@abaye-elegance.com</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-luxe-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="clock" class="w-6 h-6 text-luxe-gold"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxe-dark mb-1">Heures d'ouverture</h3>
+                        <p class="text-gray-500">Lun - Sam : 9h00 - 19h00</p>
+                        <p class="text-gray-500">Dimanche : Fermé</p>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="flex items-center gap-4 pt-4">
+                    <a href="#" class="w-12 h-12 bg-luxe-dark rounded-full flex items-center justify-center text-white hover:bg-luxe-gold transition-colors">
+                        <i data-lucide="facebook" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 bg-luxe-dark rounded-full flex items-center justify-center text-white hover:bg-luxe-gold transition-colors">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 bg-luxe-dark rounded-full flex items-center justify-center text-white hover:bg-luxe-gold transition-colors">
+                        <i data-lucide="twitter" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://wa.me/224622000000" target="_blank" class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white hover:bg-green-600 transition-colors">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="bg-white rounded-3xl p-8 shadow-sm">
+                <h3 class="font-serif text-2xl font-bold text-luxe-dark mb-6">Envoyez-nous un message</h3>
+                <form class="space-y-5" onsubmit="event.preventDefault(); showToast('Message envoyé avec succès !', 'success'); this.reset();">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                            <input type="text" required class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold outline-none transition-all text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+                            <input type="tel" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold outline-none transition-all text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                        <textarea rows="5" required class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold outline-none transition-all text-sm resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-luxe-dark text-white py-4 rounded-full font-semibold hover:bg-luxe-gold transition-colors duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>lucide.createIcons();</script>
+{% endblock %}

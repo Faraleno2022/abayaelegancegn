@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Abaye Elégance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans bg-luxe-darker min-h-screen flex items-center justify-center p-4">
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-luxe-gold/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-luxe-gold/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 bg-luxe-gold/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span class="text-luxe-gold font-serif text-3xl font-bold">A</span>
+            </div>
+            <h1 class="font-serif text-3xl font-bold text-white">Abaye Elégance</h1>
+            <p class="text-gray-500 text-sm mt-1">Espace Administrateur</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+            <h2 class="font-serif text-2xl font-bold text-white mb-6">Connexion</h2>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="mb-4 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Identifiant</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" name="username" required autofocus
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all text-sm"
+                            placeholder="Nom d'utilisateur">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Mot de passe</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="password" name="password" required
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all text-sm"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-luxe-gold text-luxe-dark py-4 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors duration-300 flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-5 h-5"></i>
+                    Se connecter
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="{% url 'home' %}" class="text-gray-500 hover:text-luxe-gold text-sm flex items-center justify-center gap-1 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Retour à la boutique
+            </a>
+        </div>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

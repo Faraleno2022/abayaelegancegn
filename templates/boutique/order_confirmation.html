@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Commande Confirmée — Abaye Elégance{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center mb-12">
+        <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+            <i data-lucide="check-circle" class="w-10 h-10 text-green-500"></i>
+        </div>
+        <h1 class="font-serif text-4xl font-bold text-luxe-dark mb-3">Commande Confirmée !</h1>
+        <p class="text-gray-500 text-lg">Merci pour votre commande. Nous vous contacterons bientôt.</p>
+    </div>
+
+    <!-- Order Details -->
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <!-- Order Header -->
+        <div class="bg-luxe-dark p-6 text-center">
+            <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-1">Numéro de commande</p>
+            <p class="font-serif text-3xl font-bold text-white">{{ order.numero }}</p>
+        </div>
+
+        <!-- Order Info -->
+        <div class="p-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Client</p>
+                    <p class="font-semibold text-luxe-dark">{{ order.prenom_nom }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Téléphone</p>
+                    <p class="font-semibold text-luxe-dark">{{ order.telephone }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Adresse</p>
+                    <p class="font-semibold text-luxe-dark">{{ order.adresse }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Mode de paiement</p>
+                    <p class="font-semibold text-luxe-dark">{{ order.get_mode_paiement_display }}</p>
+                </div>
+            </div>
+
+            <!-- Items -->
+            <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4">Articles commandés</h3>
+            <div class="divide-y divide-gray-100">
+                {% for item in order.items.all %}
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center gap-4">
+                        {% if item.product %}
+                        <div class="w-14 h-14 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                            <img src="{{ item.product.get_image_url }}" alt="{{ item.nom_produit }}" class="w-full h-full object-cover">
+                        </div>
+                        {% endif %}
+                        <div>
+                            <p class="font-medium text-luxe-dark">{{ item.nom_produit }}</p>
+                            <p class="text-sm text-gray-400">Quantité : {{ item.quantite }}</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-luxe-dark">{{ item.sous_total_formate }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Total -->
+            <div class="border-t-2 border-luxe-dark mt-4 pt-4 flex justify-between items-center">
+                <span class="font-serif text-xl font-bold text-luxe-dark">Total</span>
+                <span class="font-serif text-2xl font-bold text-luxe-gold">{{ order.total_formate }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row gap-4 mt-10 justify-center">
+        <a href="{% url 'home' %}" class="bg-luxe-dark text-white px-8 py-4 rounded-full font-semibold hover:bg-luxe-gold transition-colors text-center flex items-center justify-center gap-2">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i> Continuer mes achats
+        </a>
+        <button onclick="shareWhatsApp('Ma commande {{ order.numero }}', '{{ order.total_formate }}', window.location.href)"
+                class="bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Partager sur WhatsApp
+        </button>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>lucide.createIcons();</script>
+{% endblock %}

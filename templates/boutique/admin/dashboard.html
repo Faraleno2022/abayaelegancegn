@@ -1,0 +1,165 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}Tableau de bord{% endblock %}
+{% block nav_dashboard %}bg-white/10 text-white{% endblock %}
+{% block mob_dashboard %}text-luxe-gold bg-luxe-gold/10{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="font-serif text-3xl font-bold text-luxe-dark">Tableau de bord</h1>
+    <p class="text-gray-500 mt-1">Vue d'ensemble de votre activité</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <!-- Total Orders -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="package" class="w-6 h-6 text-blue-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-blue-500 bg-blue-50 px-2.5 py-1 rounded-full">Total</span>
+        </div>
+        <p class="font-serif text-3xl font-bold text-luxe-dark">{{ total_orders }}</p>
+        <p class="text-sm text-gray-500 mt-1">Commandes totales</p>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="clock" class="w-6 h-6 text-amber-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-amber-500 bg-amber-50 px-2.5 py-1 rounded-full">En attente</span>
+        </div>
+        <p class="font-serif text-3xl font-bold text-luxe-dark">{{ pending_orders }}</p>
+        <p class="text-sm text-gray-500 mt-1">Nouvelles commandes</p>
+    </div>
+
+    <!-- Products -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="shopping-bag" class="w-6 h-6 text-purple-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-purple-500 bg-purple-50 px-2.5 py-1 rounded-full">Actifs</span>
+        </div>
+        <p class="font-serif text-3xl font-bold text-luxe-dark">{{ total_products }}</p>
+        <p class="text-sm text-gray-500 mt-1">Produits au catalogue</p>
+    </div>
+
+    <!-- Revenue -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-green-500 bg-green-50 px-2.5 py-1 rounded-full">Revenus</span>
+        </div>
+        <p class="font-serif text-2xl font-bold text-luxe-dark">{{ total_revenue_formate }}</p>
+        <p class="text-sm text-gray-500 mt-1">Chiffre d'affaires</p>
+    </div>
+</div>
+
+<!-- Order Status Summary -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+    <a href="{% url 'admin_orders' %}?statut=nouvelle" class="bg-amber-50 border border-amber-100 rounded-2xl p-6 hover:shadow-md transition-all flex items-center gap-4">
+        <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center">
+            <i data-lucide="alert-circle" class="w-7 h-7 text-amber-600"></i>
+        </div>
+        <div>
+            <p class="font-serif text-2xl font-bold text-amber-700">{{ pending_orders }}</p>
+            <p class="text-sm text-amber-600 font-medium">Nouvelles</p>
+        </div>
+    </a>
+    <a href="{% url 'admin_orders' %}?statut=en_cours" class="bg-blue-50 border border-blue-100 rounded-2xl p-6 hover:shadow-md transition-all flex items-center gap-4">
+        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+            <i data-lucide="loader" class="w-7 h-7 text-blue-600"></i>
+        </div>
+        <div>
+            <p class="font-serif text-2xl font-bold text-blue-700">{{ in_progress_orders }}</p>
+            <p class="text-sm text-blue-600 font-medium">En cours</p>
+        </div>
+    </a>
+    <a href="{% url 'admin_orders' %}?statut=terminee" class="bg-green-50 border border-green-100 rounded-2xl p-6 hover:shadow-md transition-all flex items-center gap-4">
+        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+            <i data-lucide="check-circle" class="w-7 h-7 text-green-600"></i>
+        </div>
+        <div>
+            <p class="font-serif text-2xl font-bold text-green-700">{{ completed_orders }}</p>
+            <p class="text-sm text-green-600 font-medium">Terminées</p>
+        </div>
+    </a>
+</div>
+
+<!-- Recent Orders -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <h2 class="font-serif text-xl font-bold text-luxe-dark">Commandes récentes</h2>
+        <a href="{% url 'admin_orders' %}" class="text-sm text-luxe-gold hover:underline flex items-center gap-1">
+            Voir tout <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+    </div>
+
+    {% if recent_orders %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">N° Commande</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Client</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Montant</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for order in recent_orders %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-sm font-semibold text-luxe-dark">{{ order.numero }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm font-medium text-luxe-dark">{{ order.prenom_nom }}</p>
+                        <p class="text-xs text-gray-400">{{ order.telephone }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm font-semibold text-luxe-dark">{{ order.total_formate }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if order.statut == 'nouvelle' %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
+                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Nouvelle
+                        </span>
+                        {% elif order.statut == 'en_cours' %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> En cours
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Terminée
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm text-gray-500">{{ order.date_commande|date:"d/m/Y H:i" }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'admin_order_detail' order.pk %}" class="text-sm text-luxe-gold hover:text-luxe-dark font-medium transition-colors">
+                            Détails →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+        <p class="text-gray-400 font-medium">Aucune commande pour le moment</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

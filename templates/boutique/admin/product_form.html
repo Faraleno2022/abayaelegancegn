@@ -1,0 +1,223 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}{% if mode == 'edit' %}Modifier {{ product.nom }}{% else %}Ajouter un produit{% endif %}{% endblock %}
+{% block nav_products %}bg-white/10 text-white{% endblock %}
+{% block mob_products %}text-luxe-gold bg-luxe-gold/10{% endblock %}
+
+{% block content %}
+<!-- Back -->
+<a href="{% url 'admin_products' %}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-luxe-gold mb-6 transition-colors">
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour aux produits
+</a>
+
+<div class="max-w-3xl mx-auto">
+    <div class="mb-8">
+        <h1 class="font-serif text-3xl font-bold text-luxe-dark">
+            {% if mode == 'edit' %}Modifier le produit{% else %}Ajouter un produit{% endif %}
+        </h1>
+        <p class="text-gray-500 mt-1">
+            {% if mode == 'edit' %}Mettez à jour les informations de « {{ product.nom }} »{% else %}Remplissez les informations du nouveau produit{% endif %}
+        </p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Nom + Catégorie -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="font-serif text-lg font-bold text-luxe-dark mb-5 flex items-center gap-2">
+                <i data-lucide="info" class="w-5 h-5 text-luxe-gold"></i> Informations générales
+            </h2>
+
+            <div class="space-y-5">
+                <!-- Nom -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Nom du produit <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="nom" required
+                        value="{% if mode == 'edit' %}{{ product.nom }}{% elif form_data %}{{ form_data.nom }}{% endif %}"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all"
+                        placeholder="Ex: Robe Élégante Soirée">
+                </div>
+
+                <!-- Catégorie + Badge -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                            Catégorie <span class="text-red-500">*</span>
+                        </label>
+                        <select name="categorie" required
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                            <option value="">— Choisir —</option>
+                            {% for key, label in categories %}
+                            <option value="{{ key }}" {% if mode == 'edit' and product.categorie == key %}selected{% elif form_data and form_data.categorie == key %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Badge</label>
+                        <select name="badge"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                            {% for key, label in badges %}
+                            <option value="{{ key }}" {% if mode == 'edit' and product.badge == key %}selected{% elif form_data and form_data.badge == key %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="description" required rows="4"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"
+                        placeholder="Décrivez votre produit en détail...">{% if mode == 'edit' %}{{ product.description }}{% elif form_data %}{{ form_data.description }}{% endif %}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prix, Stock, Note -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="font-serif text-lg font-bold text-luxe-dark mb-5 flex items-center gap-2">
+                <i data-lucide="tag" class="w-5 h-5 text-luxe-gold"></i> Prix et stock
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Prix (GNF) <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" name="prix" required min="0"
+                            value="{% if mode == 'edit' %}{{ product.prix|floatformat:0 }}{% elif form_data %}{{ form_data.prix }}{% endif %}"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 pr-16 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all"
+                            placeholder="850000">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">GNF</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Stock</label>
+                    <input type="number" name="stock" min="0"
+                        value="{% if mode == 'edit' %}{{ product.stock }}{% elif form_data %}{{ form_data.stock }}{% else %}10{% endif %}"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Note</label>
+                    <select name="note"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                        {% for i in "54321" %}
+                        <option value="{{ i }}" {% if mode == 'edit' and product.note|stringformat:"s" == i %}selected{% endif %}>{{ i }} étoile{{ i|add:"0"|length|pluralize:"s" }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="font-serif text-lg font-bold text-luxe-dark mb-5 flex items-center gap-2">
+                <i data-lucide="image" class="w-5 h-5 text-luxe-gold"></i> Image du produit
+            </h2>
+
+            {% if mode == 'edit' %}
+            <div class="mb-5">
+                <p class="text-xs text-gray-400 mb-2">Image actuelle :</p>
+                <div class="w-32 h-40 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                    <img src="{{ product.get_image_url }}" alt="{{ product.nom }}" class="w-full h-full object-cover">
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="space-y-4">
+                <!-- Upload local -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Uploader une image</label>
+                    <div class="relative">
+                        <input type="file" name="image" accept="image/*" id="imageInput"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-luxe-gold/10 file:text-luxe-gold hover:file:bg-luxe-gold/20 transition-all cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="h-px bg-gray-200 flex-1"></div>
+                    <span class="text-xs text-gray-400 font-medium">OU</span>
+                    <div class="h-px bg-gray-200 flex-1"></div>
+                </div>
+
+                <!-- URL externe -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">URL de l'image (externe)</label>
+                    <input type="url" name="image_url"
+                        value="{% if mode == 'edit' and product.image_url %}{{ product.image_url }}{% elif form_data %}{{ form_data.image_url }}{% endif %}"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all"
+                        placeholder="https://images.unsplash.com/...">
+                    <p class="text-xs text-gray-400 mt-1">L'upload local est prioritaire sur l'URL externe.</p>
+                </div>
+
+                <!-- Preview -->
+                <div id="imagePreview" class="hidden">
+                    <p class="text-xs text-gray-400 mb-2">Aperçu :</p>
+                    <div class="w-32 h-40 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                        <img id="previewImg" src="" alt="Aperçu" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actif toggle -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="font-serif text-lg font-bold text-luxe-dark flex items-center gap-2">
+                        <i data-lucide="eye" class="w-5 h-5 text-luxe-gold"></i> Visibilité
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Un produit désactivé n'apparaît pas sur le site public.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="actif" class="sr-only peer"
+                        {% if mode == 'edit' and product.actif %}checked{% elif mode == 'add' %}checked{% endif %}>
+                    <div class="w-14 h-7 bg-gray-200 peer-focus:ring-4 peer-focus:ring-luxe-gold/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-luxe-gold"></div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex items-center gap-4 pt-2">
+            <button type="submit" class="flex-1 sm:flex-none bg-luxe-gold text-luxe-dark py-3.5 px-8 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 shadow-sm">
+                {% if mode == 'edit' %}
+                <i data-lucide="check" class="w-5 h-5"></i> Enregistrer les modifications
+                {% else %}
+                <i data-lucide="plus" class="w-5 h-5"></i> Ajouter le produit
+                {% endif %}
+            </button>
+            <a href="{% url 'admin_products' %}" class="py-3.5 px-6 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors text-sm">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image preview for file upload
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            document.getElementById('previewImg').src = evt.target.result;
+            document.getElementById('imagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Note selector display with stars
+document.querySelector('select[name="note"]').addEventListener('change', function() {
+    // Simple feedback could be added here
+});
+</script>
+{% endblock %}
