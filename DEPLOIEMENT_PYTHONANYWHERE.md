@@ -28,7 +28,7 @@
 ```bash
 # Dans la console Bash de PythonAnywhere :
 cd ~
-git clone <URL_DE_VOTRE_REPO> abaye_elegance
+git clone https://github.com/Faraleno2022/abayaelegancegn.git abaye_elegance
 ```
 
 ### Option B : Upload manuel
@@ -77,7 +77,13 @@ Dans `abaye_elegance/settings.py`, remplacer les valeurs par défaut dans la sec
 Aussi, mettre à jour :
 ```python
 DEBUG = False
-ALLOWED_HOSTS = ['votre_username.pythonanywhere.com']
+# ALLOWED_HOSTS et CSRF_TRUSTED_ORIGINS sont déjà configurés pour abayaelegancegn.com
+# Ajouter aussi le domaine PythonAnywhere si besoin :
+ALLOWED_HOSTS = [
+    'abayaelegancegn.com',
+    'www.abayaelegancegn.com',
+    'votre_username.pythonanywhere.com',
+]
 ```
 
 ---
@@ -144,16 +150,24 @@ application = get_wsgi_application()
 
 ---
 
-## Étape 9 : Relancer l'application
+## Étape 9 : Configurer le nom de domaine personnalisé
 
-1. Cliquer le bouton vert **Reload** en haut de la page Web
-2. Visiter `https://votre_username.pythonanywhere.com`
+1. Dans l'onglet **Web** de PythonAnywhere, section **Domains**
+2. Ajouter `abayaelegancegn.com` comme domaine personnalisé
+3. Chez votre registrar DNS (là où vous avez acheté le domaine), configurer :
+   - **CNAME** : `www` → `votre_username.pythonanywhere.com`
+   - **A record** : `@` → l'IP fournie par PythonAnywhere (voir leur doc)
+4. Activer le **HTTPS** gratuit via PythonAnywhere (bouton dans la section Web)
+5. Cliquer le bouton vert **Reload**
+6. Visiter `https://abayaelegancegn.com`
+
+> **Note** : Un compte **payant** PythonAnywhere est requis pour utiliser un nom de domaine personnalisé.
 
 ---
 
 ## Identifiants Admin
 
-- **URL Admin** : `https://votre_username.pythonanywhere.com/admin-panel/login/`
+- **URL Admin** : `https://abayaelegancegn.com/admin-panel/login/`
 - **Username** : celui créé avec `createsuperuser`
 - **Password** : celui choisi
 
@@ -170,6 +184,7 @@ application = get_wsgi_application()
 | Admin Login | `/admin-panel/login/` |
 | Admin Dashboard | `/admin-panel/` |
 | Admin Commandes | `/admin-panel/commandes/` |
+| Admin Produits | `/admin-panel/produits/` |
 | Django Admin | `/django-admin/` |
 
 ---
@@ -177,6 +192,6 @@ application = get_wsgi_application()
 ## Notes importantes
 
 - **Compte gratuit** : le site s'endort après 3 mois sans renouvellement
-- **Compte payant** : nom de domaine personnalisé possible
+- **Compte payant** : requis pour le domaine personnalisé `abayaelegancegn.com`
 - **Images produits** : les images utilisent des URLs Unsplash, pas besoin d'uploader d'images
 - **Sécurité** : changer `SECRET_KEY` en production et mettre `DEBUG = False`

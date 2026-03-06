@@ -25,7 +25,17 @@ SECRET_KEY = 'django-insecure-hte0@4$#+kp@5am!4$hmo71^sjt)2gk9)rw#h+94+9%=k8^h+3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'abayaelegancegn.com',
+    'www.abayaelegancegn.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://abayaelegancegn.com',
+    'https://www.abayaelegancegn.com',
+]
 
 
 # Application definition
