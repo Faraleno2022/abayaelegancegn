@@ -24,20 +24,37 @@
             </div>
         </div>
 
-        <!-- Link display -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5">
-            <div class="flex-1 bg-white/10 rounded-xl px-4 py-3 flex items-center gap-2 border border-white/10">
-                <i data-lucide="link" class="w-4 h-4 text-luxe-gold flex-shrink-0"></i>
-                <span class="text-sm font-mono truncate" id="shareLink">{{ request.scheme }}://{{ request.get_host }}/commander-en-ligne/</span>
+        <!-- Link 1: Site principal -->
+        <div class="mb-5">
+            <p class="text-xs text-luxe-gold font-semibold uppercase tracking-wider mb-2"><i data-lucide="globe" class="w-3.5 h-3.5 inline"></i> Lien du site</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div class="flex-1 bg-white/10 rounded-xl px-4 py-3 flex items-center gap-2 border border-white/10">
+                    <i data-lucide="link" class="w-4 h-4 text-luxe-gold flex-shrink-0"></i>
+                    <span class="text-sm font-mono truncate" id="siteLink">{{ request.scheme }}://{{ request.get_host }}/</span>
+                </div>
+                <button onclick="copySiteLink()" id="copySiteBtn" class="bg-white/10 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap border border-white/10">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copier
+                </button>
             </div>
-            <button onclick="copyLink()" id="copyBtn" class="bg-luxe-gold text-luxe-dark px-5 py-3 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap">
-                <i data-lucide="copy" class="w-4 h-4"></i> Copier le lien
-            </button>
+        </div>
+
+        <!-- Link 2: Formulaire de commande -->
+        <div class="mb-5">
+            <p class="text-xs text-luxe-gold font-semibold uppercase tracking-wider mb-2"><i data-lucide="shopping-cart" class="w-3.5 h-3.5 inline"></i> Formulaire de commande directe</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div class="flex-1 bg-white/10 rounded-xl px-4 py-3 flex items-center gap-2 border border-white/10">
+                    <i data-lucide="link" class="w-4 h-4 text-luxe-gold flex-shrink-0"></i>
+                    <span class="text-sm font-mono truncate" id="shareLink">{{ request.scheme }}://{{ request.get_host }}/commander-en-ligne/</span>
+                </div>
+                <button onclick="copyLink()" id="copyBtn" class="bg-luxe-gold text-luxe-dark px-5 py-3 rounded-xl font-semibold hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copier
+                </button>
+            </div>
         </div>
 
         <!-- Share buttons -->
         <div class="flex flex-wrap items-center gap-3">
-            <span class="text-xs text-gray-400 font-medium">Partager sur :</span>
+            <span class="text-xs text-gray-400 font-medium">Partager le formulaire sur :</span>
 
             <!-- WhatsApp -->
             <a id="shareWhatsApp" href="#" target="_blank"
@@ -223,6 +240,7 @@
 {% block extra_js %}
 <script>
     const shareLink = document.getElementById('shareLink').textContent.trim();
+    const siteLink = document.getElementById('siteLink').textContent.trim();
     const shareText = encodeURIComponent('✨ Découvrez notre collection et commandez en ligne chez Abaye Elégance ! Mode, Accessoires & Décoration de Luxe 🛍️');
 
     // Set share URLs
@@ -231,19 +249,32 @@
     document.getElementById('shareTwitter').href = 'https://twitter.com/intent/tweet?text=' + shareText + '&url=' + encodeURIComponent(shareLink);
     document.getElementById('shareTelegram').href = 'https://t.me/share/url?url=' + encodeURIComponent(shareLink) + '&text=' + shareText;
 
+    function copyBtnFeedback(btn) {
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copié !';
+        btn.classList.add('bg-green-500', 'text-white');
+        lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copier';
+            btn.classList.remove('bg-green-500', 'text-white');
+            lucide.createIcons();
+        }, 2000);
+    }
+
     function copyLink() {
         navigator.clipboard.writeText(shareLink).then(() => {
             const btn = document.getElementById('copyBtn');
-            btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copié !';
-            btn.classList.add('bg-green-500', 'text-white');
             btn.classList.remove('bg-luxe-gold', 'text-luxe-dark');
-            lucide.createIcons();
-            setTimeout(() => {
-                btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copier le lien';
-                btn.classList.remove('bg-green-500', 'text-white');
-                btn.classList.add('bg-luxe-gold', 'text-luxe-dark');
-                lucide.createIcons();
-            }, 2000);
+            copyBtnFeedback(btn);
+            setTimeout(() => { btn.classList.add('bg-luxe-gold', 'text-luxe-dark'); }, 2000);
+        });
+    }
+
+    function copySiteLink() {
+        navigator.clipboard.writeText(siteLink).then(() => {
+            const btn = document.getElementById('copySiteBtn');
+            btn.classList.remove('bg-white/10', 'border-white/10');
+            copyBtnFeedback(btn);
+            setTimeout(() => { btn.classList.add('bg-white/10', 'border-white/10'); }, 2000);
         });
     }
 </script>
