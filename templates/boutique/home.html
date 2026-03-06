@@ -5,80 +5,59 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative bg-luxe-dark overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-luxe-darker via-luxe-dark to-luxe-navy"></div>
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-20 left-10 w-72 h-72 bg-luxe-gold rounded-full blur-3xl"></div>
-        <div class="absolute bottom-20 right-10 w-96 h-96 bg-luxe-gold rounded-full blur-3xl"></div>
+<section class="relative overflow-hidden min-h-[600px] md:min-h-[700px] flex items-center">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+        <img src="{% static 'images/home.jpg' %}" alt="Abaye Elégance" class="w-full h-full object-cover">
     </div>
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-luxe-darker/90 via-luxe-dark/80 to-luxe-dark/50"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-luxe-darker/60 via-transparent to-luxe-darker/30"></div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Text -->
-            <div class="text-center lg:text-left">
-                <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-4">Collection Premium</p>
-                <h1 class="font-serif text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-                    L'Élégance<br>
-                    <span class="text-luxe-gold">Redéfinie</span>
-                </h1>
-                <p class="text-gray-300 text-lg md:text-xl leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-                    Découvrez notre collection exclusive de produits soigneusement sélectionnés pour sublimer votre quotidien.
-                </p>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36 w-full">
+        <div class="max-w-2xl">
+            <p class="text-luxe-gold text-sm uppercase tracking-[0.3em] font-semibold mb-4">Collection Premium</p>
+            <h1 class="font-serif text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+                L'Élégance<br>
+                <span class="text-luxe-gold">Redéfinie</span>
+            </h1>
+            <p class="text-gray-300 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
+                Découvrez notre collection exclusive de produits soigneusement sélectionnés pour sublimer votre quotidien.
+            </p>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
-                    <a href="#collection" class="bg-luxe-gold hover:bg-luxe-gold-light text-luxe-dark font-semibold px-8 py-4 rounded-full transition-all duration-300 text-sm uppercase tracking-wider flex items-center justify-center gap-2">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        Explorer la collection
-                    </a>
-                    <div class="flex items-center justify-center gap-3">
-                        <button onclick="shareWhatsApp('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-green-500/20 text-white hover:text-green-400 flex items-center justify-center transition-all" title="Partager sur WhatsApp">
-                            <i data-lucide="message-circle" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="shareFacebook(window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500/20 text-white hover:text-blue-400 flex items-center justify-center transition-all" title="Partager sur Facebook">
-                            <i data-lucide="facebook" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="shareTwitter('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-sky-500/20 text-white hover:text-sky-400 flex items-center justify-center transition-all" title="Partager sur Twitter">
-                            <i data-lucide="twitter" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stats -->
-                <div class="flex items-center gap-8 justify-center lg:justify-start">
-                    <div class="text-center">
-                        <p class="font-serif text-3xl font-bold text-luxe-gold">{{ total_products }}</p>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Produits</p>
-                    </div>
-                    <div class="w-px h-10 bg-gray-600"></div>
-                    <div class="text-center">
-                        <p class="font-serif text-3xl font-bold text-luxe-gold">3</p>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Catégories</p>
-                    </div>
-                    <div class="w-px h-10 bg-gray-600"></div>
-                    <div class="text-center">
-                        <p class="font-serif text-3xl font-bold text-luxe-gold">100%</p>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Authentique</p>
-                    </div>
+            <div class="flex flex-col sm:flex-row gap-4 mb-10">
+                <a href="#collection" class="bg-luxe-gold hover:bg-luxe-gold-light text-luxe-dark font-semibold px-8 py-4 rounded-full transition-all duration-300 text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Explorer la collection
+                </a>
+                <div class="flex items-center justify-center gap-3">
+                    <button onclick="shareWhatsApp('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-green-500/20 text-white hover:text-green-400 flex items-center justify-center transition-all" title="Partager sur WhatsApp">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="shareFacebook(window.location.href)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-blue-500/20 text-white hover:text-blue-400 flex items-center justify-center transition-all" title="Partager sur Facebook">
+                        <i data-lucide="facebook" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="shareTwitter('Abaye Elégance', '', window.location.href)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-sky-500/20 text-white hover:text-sky-400 flex items-center justify-center transition-all" title="Partager sur Twitter">
+                        <i data-lucide="twitter" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- Hero Image Grid -->
-            <div class="hidden lg:grid grid-cols-2 gap-4">
-                <div class="space-y-4">
-                    <div class="bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-2xl p-8 h-48 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                        <i data-lucide="shirt" class="w-16 h-16 text-luxe-gold/60 group-hover:text-luxe-gold transition-colors"></i>
-                    </div>
-                    <div class="bg-gradient-to-br from-luxe-gold/10 to-transparent rounded-2xl p-8 h-64 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                        <i data-lucide="gem" class="w-20 h-20 text-luxe-gold/40 group-hover:text-luxe-gold transition-colors"></i>
-                    </div>
+            <!-- Stats -->
+            <div class="flex items-center gap-8">
+                <div class="text-center">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">{{ total_products }}</p>
+                    <p class="text-xs text-gray-300 uppercase tracking-wider">Produits</p>
                 </div>
-                <div class="space-y-4 pt-8">
-                    <div class="bg-gradient-to-br from-luxe-gold/15 to-transparent rounded-2xl p-8 h-64 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                        <i data-lucide="crown" class="w-20 h-20 text-luxe-gold/50 group-hover:text-luxe-gold transition-colors"></i>
-                    </div>
-                    <div class="bg-gradient-to-br from-luxe-gold/20 to-luxe-gold/5 rounded-2xl p-8 h-48 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                        <i data-lucide="home" class="w-16 h-16 text-luxe-gold/60 group-hover:text-luxe-gold transition-colors"></i>
-                    </div>
+                <div class="w-px h-10 bg-white/20"></div>
+                <div class="text-center">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">3</p>
+                    <p class="text-xs text-gray-300 uppercase tracking-wider">Catégories</p>
+                </div>
+                <div class="w-px h-10 bg-white/20"></div>
+                <div class="text-center">
+                    <p class="font-serif text-3xl font-bold text-luxe-gold">100%</p>
+                    <p class="text-xs text-gray-300 uppercase tracking-wider">Authentique</p>
                 </div>
             </div>
         </div>
