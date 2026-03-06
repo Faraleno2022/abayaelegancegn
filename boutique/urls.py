@@ -16,6 +16,10 @@ urlpatterns = [
     path('commander-en-ligne/', views.commander_en_ligne, name='commander_en_ligne'),
     path('commander-en-ligne/valider/', views.commander_en_ligne_submit, name='commander_en_ligne_submit'),
 
+    # Commande directe par produit (lien partageable)
+    path('commander/<int:pk>/', views.commande_directe, name='commande_directe'),
+    path('commander/<int:pk>/valider/', views.commande_directe_submit, name='commande_directe_submit'),
+
     # Admin
     path('admin-panel/login/', views.admin_login, name='admin_login'),
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),

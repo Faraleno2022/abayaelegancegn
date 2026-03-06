@@ -276,6 +276,61 @@ def commander_en_ligne_submit(request):
     return redirect('order_confirmation', numero=order.numero)
 
 
+# ============ COMMANDE DIRECTE PAR PRODUIT (lien partageable) ============
+
+def commande_directe(request, pk):
+    product = get_object_or_404(Product, pk=pk, actif=True)
+    context = {
+        'product': product,
+        'payment_methods': Order.PAYMENT_CHOICES,
+    }
+    return render(request, 'boutique/commande_directe.html', context)
+
+
+def commande_directe_submit(request, pk):
+    if request.method != 'POST':
+        return redirect('commande_directe', pk=pk)
+
+    product = get_object_or_404(Product, pk=pk, actif=True)
+
+    prenom_nom = request.POST.get('prenom_nom', '').strip()
+    telephone = request.POST.get('telephone', '').strip()
+    email = request.POST.get('email', '').strip()
+    adresse = request.POST.get('adresse', '').strip()
+    mode_paiement = request.POST.get('mode_paiement', '')
+    notes = request.POST.get('notes', '').strip()
+    quantite = int(request.POST.get('quantite', 1))
+
+    if not all([prenom_nom, telephone, adresse, mode_paiement]):
+        messages.error(request, 'Veuillez remplir tous les champs obligatoires.')
+        return redirect('commande_directe', pk=pk)
+
+    if quantite < 1:
+        quantite = 1
+
+    sous_total = product.prix * quantite
+
+    order = Order.objects.create(
+        prenom_nom=prenom_nom,
+        telephone=telephone,
+        email=email or None,
+        adresse=adresse,
+        mode_paiement=mode_paiement,
+        notes=notes or None,
+        total=sous_total,
+    )
+
+    OrderItem.objects.create(
+        order=order,
+        product=product,
+        nom_produit=product.nom,
+        prix_unitaire=product.prix,
+        quantite=quantite,
+    )
+
+    return redirect('order_confirmation', numero=order.numero)
+
+
 # ============ ADMIN VIEWS ============
 
 def admin_login(request):

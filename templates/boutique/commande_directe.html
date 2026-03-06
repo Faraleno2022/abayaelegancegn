@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander {{ product.nom }} — Abaye Elégance</title>
+    <meta name="description" content="Commandez {{ product.nom }} à {{ product.prix_formate }} chez Abaye Elégance">
+    <meta property="og:title" content="{{ product.nom }} — Abaye Elégance">
+    <meta property="og:description" content="{{ product.nom }} à {{ product.prix_formate }}. Commandez maintenant !">
+    <meta property="og:image" content="{{ product.get_image_url }}">
+    <meta property="og:type" content="product">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .toast {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            animation: slideIn 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen flex flex-col">
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 {% if message.tags == 'error' %}border-red-500{% else %}border-green-500{% endif %}" onclick="this.remove()">
+        <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Header -->
+    <header class="bg-luxe-dark text-white py-4">
+        <div class="max-w-2xl mx-auto px-4 flex items-center justify-center gap-3">
+            <img src="{% static 'images/Abaye.jpg' %}" alt="Abaye Elégance" class="h-10 w-auto rounded-full bg-white/10">
+            <div class="text-center">
+                <h1 class="font-serif text-lg font-bold leading-tight">Abaye Elégance</h1>
+                <p class="text-[10px] uppercase tracking-widest text-luxe-gold-light">Commande directe</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
+        <form method="POST" action="{% url 'commande_directe_submit' product.pk %}" id="orderForm">
+            {% csrf_token %}
+
+            <!-- Product Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="flex flex-col sm:flex-row">
+                    <!-- Image -->
+                    <div class="sm:w-48 h-56 sm:h-auto flex-shrink-0 bg-gray-100">
+                        <img src="{{ product.get_image_url }}" alt="{{ product.nom }}" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Info -->
+                    <div class="flex-1 p-5">
+                        {% if product.badge %}
+                        <span class="inline-block text-xs font-bold px-2.5 py-1 rounded-full bg-luxe-gold text-white mb-2">{{ product.badge }}</span>
+                        {% endif %}
+                        <h2 class="font-serif text-2xl font-bold text-luxe-dark mb-1">{{ product.nom }}</h2>
+                        <p class="text-sm text-gray-500 mb-3">{{ product.get_categorie_display }}</p>
+                        {% if product.description %}
+                        <p class="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-3">{{ product.description }}</p>
+                        {% endif %}
+                        <p class="font-serif text-2xl font-bold text-luxe-gold" id="unitPrice" data-price="{{ product.prix }}">{{ product.prix_formate }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantity + Recap -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+                <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-luxe-gold"></i> Récapitulatif
+                </h3>
+
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ product.get_image_url }}" alt="{{ product.nom }}" class="w-12 h-12 rounded-lg object-cover">
+                        <div>
+                            <p class="text-sm font-medium text-luxe-dark">{{ product.nom }}</p>
+                            <p class="text-xs text-gray-400">{{ product.prix_formate }} / unité</p>
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="changeQty(-1)" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
+                            <i data-lucide="minus" class="w-4 h-4"></i>
+                        </button>
+                        <input type="number" name="quantite" id="quantite" value="1" min="1" max="99"
+                               class="w-14 text-center border border-gray-200 rounded-lg py-1.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-luxe-gold/30"
+                               onchange="updateTotal()">
+                        <button type="button" onclick="changeQty(1)" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="flex items-center justify-between pt-4">
+                    <p class="font-semibold text-luxe-dark">Total</p>
+                    <p class="font-serif text-xl font-bold text-luxe-gold" id="totalPrice">{{ product.prix_formate }}</p>
+                </div>
+            </div>
+
+            <!-- Delivery Form -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+                <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+                    <i data-lucide="truck" class="w-5 h-5 text-luxe-gold"></i> Informations de livraison
+                </h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Prénom et Nom <span class="text-red-400">*</span></label>
+                        <input type="text" name="prenom_nom" required placeholder="Ex: Mamadou Diallo"
+                               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Téléphone / WhatsApp <span class="text-red-400">*</span></label>
+                        <input type="tel" name="telephone" required placeholder="Ex: 622 00 00 00"
+                               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email (optionnel)</label>
+                        <input type="email" name="email" placeholder="votre@email.com"
+                               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse de livraison <span class="text-red-400">*</span></label>
+                        <textarea name="adresse" required rows="2" placeholder="Quartier, rue, repère..."
+                                  class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Mode de paiement <span class="text-red-400">*</span></label>
+                        <select name="mode_paiement" required
+                                class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                            <option value="">— Choisir —</option>
+                            {% for value, label in payment_methods %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Notes (optionnel)</label>
+                        <textarea name="notes" rows="2" placeholder="Instructions particulières..."
+                                  class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                    class="w-full bg-luxe-gold text-luxe-dark py-4 rounded-2xl font-bold text-base hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 shadow-lg">
+                <i data-lucide="send" class="w-5 h-5"></i>
+                Confirmer la commande
+            </button>
+        </form>
+
+        <!-- Trust badges -->
+        <div class="flex items-center justify-center gap-6 mt-6 text-xs text-gray-400">
+            <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Sécurisé</span>
+            <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Livraison Conakry</span>
+            <span class="flex items-center gap-1"><i data-lucide="headphones" class="w-3.5 h-3.5"></i> Support WhatsApp</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-luxe-dark text-gray-500 text-center py-4 text-xs mt-8">
+        &copy; 2024 Abaye Elégance. Tous droits réservés.
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('.toast').forEach(t => setTimeout(() => t.remove(), 3000));
+
+        const unitPrice = parseInt(document.getElementById('unitPrice').dataset.price);
+
+        function formatPrice(val) {
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' GNF';
+        }
+
+        function changeQty(delta) {
+            const input = document.getElementById('quantite');
+            let val = parseInt(input.value) + delta;
+            if (val < 1) val = 1;
+            if (val > 99) val = 99;
+            input.value = val;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const qty = parseInt(document.getElementById('quantite').value) || 1;
+            document.getElementById('totalPrice').textContent = formatPrice(unitPrice * qty);
+        }
+    </script>
+</body>
+</html>
