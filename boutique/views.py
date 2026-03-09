@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -180,12 +181,15 @@ def checkout(request):
     request.session['cart'] = {}
     request.session['last_order_id'] = order.id
 
-    return redirect('order_confirmation', numero=order.numero)
+    return redirect(f"{reverse('order_confirmation', kwargs={'numero': order.numero})}?redirect_home=1")
 
 
 def order_confirmation(request, numero):
     order = get_object_or_404(Order, numero=numero)
-    context = {'order': order}
+    context = {
+        'order': order,
+        'redirect_home': request.GET.get('redirect_home') == '1',
+    }
     return render(request, 'boutique/order_confirmation.html', context)
 
 
@@ -278,7 +282,7 @@ def commander_en_ligne_submit(request):
     order.total = total
     order.save()
 
-    return redirect('order_confirmation', numero=order.numero)
+    return redirect(f"{reverse('order_confirmation', kwargs={'numero': order.numero})}?redirect_home=1")
 
 
 # ============ COMMANDE DIRECTE PAR PRODUIT (lien partageable) ============
@@ -333,7 +337,7 @@ def commande_directe_submit(request, pk):
         quantite=quantite,
     )
 
-    return redirect('order_confirmation', numero=order.numero)
+    return redirect(f"{reverse('order_confirmation', kwargs={'numero': order.numero})}?redirect_home=1")
 
 
 # ============ ADMIN VIEWS ============

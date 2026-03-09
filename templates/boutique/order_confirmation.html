@@ -11,6 +11,9 @@
         </div>
         <h1 class="font-serif text-4xl font-bold text-luxe-dark mb-3">Commande Confirmée !</h1>
         <p class="text-gray-500 text-lg">Merci pour votre commande. Nous vous contacterons bientôt.</p>
+        {% if redirect_home %}
+        <p class="text-sm text-luxe-gold font-medium mt-3">Redirection automatique vers le site dans quelques secondes...</p>
+        {% endif %}
     </div>
 
     <!-- Order Details -->
@@ -85,5 +88,12 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>lucide.createIcons();</script>
+<script>
+    lucide.createIcons();
+    {% if redirect_home %}
+    setTimeout(() => {
+        window.location.href = "{% url 'home' %}";
+    }, 4000);
+    {% endif %}
+</script>
 {% endblock %}

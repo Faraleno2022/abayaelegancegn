@@ -52,6 +52,21 @@
             </div>
         </div>
 
+        <!-- Link 3: Vidéos Facebook -->
+        <div class="mb-5">
+            <p class="text-xs text-luxe-gold font-semibold uppercase tracking-wider mb-2"><i data-lucide="video" class="w-3.5 h-3.5 inline"></i> Lien à mettre sous les vidéos Facebook</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div class="flex-1 bg-white/10 rounded-xl px-4 py-3 flex items-center gap-2 border border-white/10">
+                    <i data-lucide="link" class="w-4 h-4 text-luxe-gold flex-shrink-0"></i>
+                    <span class="text-sm font-mono truncate" id="videoOrderLink">{{ request.scheme }}://{{ request.get_host }}/commander-en-ligne/</span>
+                </div>
+                <button onclick="copyVideoOrderLink()" id="copyVideoOrderBtn" class="bg-white/10 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap border border-white/10">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copier
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Ce lien ouvre directement le formulaire de commande, sans envoyer le client sur le site avant la commande.</p>
+        </div>
+
         <!-- Share buttons -->
         <div class="flex flex-wrap items-center gap-3">
             <span class="text-xs text-gray-400 font-medium">Partager le formulaire sur :</span>
@@ -241,6 +256,7 @@
 <script>
     const shareLink = document.getElementById('shareLink').textContent.trim();
     const siteLink = document.getElementById('siteLink').textContent.trim();
+    const videoOrderLink = document.getElementById('videoOrderLink').textContent.trim();
     const shareText = encodeURIComponent('✨ Découvrez notre collection et commandez en ligne chez Abaye Elégance ! Mode, Accessoires & Décoration de Luxe 🛍️');
 
     // Set share URLs
@@ -272,6 +288,15 @@
     function copySiteLink() {
         navigator.clipboard.writeText(siteLink).then(() => {
             const btn = document.getElementById('copySiteBtn');
+            btn.classList.remove('bg-white/10', 'border-white/10');
+            copyBtnFeedback(btn);
+            setTimeout(() => { btn.classList.add('bg-white/10', 'border-white/10'); }, 2000);
+        });
+    }
+
+    function copyVideoOrderLink() {
+        navigator.clipboard.writeText(videoOrderLink).then(() => {
+            const btn = document.getElementById('copyVideoOrderBtn');
             btn.classList.remove('bg-white/10', 'border-white/10');
             copyBtnFeedback(btn);
             setTimeout(() => { btn.classList.add('bg-white/10', 'border-white/10'); }, 2000);
