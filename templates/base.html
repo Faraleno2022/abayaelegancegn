@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Abaye Elégance{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Abaye Elégance - Boutique en ligne de produits premium. Mode, Accessoires et Maison.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}abaya, élégance, mode femme, accessoires, maison, boutique en ligne, Guinée, Conakry{% endblock %}">
+    <meta name="robots" content="{% block meta_robots %}index,follow{% endblock %}">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/Abaye.jpg' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/Abaye.jpg' %}">
 
     <!-- Open Graph Tags -->
     <meta property="og:title" content="{% block og_title %}Abaye Elégance{% endblock %}">
@@ -14,12 +20,14 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/Abaye.jpg' %}{% endblock %}">
     <meta property="og:site_name" content="Abaye Elégance">
+    <meta property="og:locale" content="fr_FR">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}Abaye Elégance{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Boutique en ligne de produits premium{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/Abaye.jpg' %}{% endblock %}">
+    {% block extra_head %}{% endblock %}
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

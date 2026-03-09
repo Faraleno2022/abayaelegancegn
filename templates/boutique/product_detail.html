@@ -3,12 +3,37 @@
 
 {% block title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block meta_description %}{{ product.description|truncatewords:30 }}{% endblock %}
+{% block meta_keywords %}{{ product.nom }}, {{ product.get_categorie_display }}, Abaye Elégance, Guinée, boutique en ligne, {{ product.badge }}{% endblock %}
+{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
 {% block og_title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block og_description %}{{ product.description|truncatewords:30 }}{% endblock %}
 {% block og_image %}{{ product.get_image_url }}{% endblock %}
 {% block twitter_title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block twitter_description %}{{ product.description|truncatewords:30 }}{% endblock %}
 {% block twitter_image %}{{ product.get_image_url }}{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ product.nom|escapejs }}",
+    "description": "{{ product.description|truncatewords:50|escapejs }}",
+    "image": "{{ product.get_image_url }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "Abaye Elégance"
+    },
+    "category": "{{ product.get_categorie_display|escapejs }}",
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "GNF",
+        "price": "{{ product.prix|floatformat:0 }}",
+        "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "url": "{{ request.build_absolute_uri }}"
+    }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
