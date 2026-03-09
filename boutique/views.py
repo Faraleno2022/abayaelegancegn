@@ -42,6 +42,10 @@ def home(request):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, actif=True)
+
+    if request.GET.get('fbclid'):
+        return redirect('commande_directe', pk=product.pk)
+
     related = Product.objects.filter(categorie=product.categorie, actif=True).exclude(pk=pk)[:4]
     context = {
         'product': product,

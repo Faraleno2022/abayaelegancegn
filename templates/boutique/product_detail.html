@@ -119,15 +119,15 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <button type="submit" class="flex-1 bg-luxe-dark text-white py-4 rounded-full font-semibold hover:bg-luxe-gold transition-colors duration-300 flex items-center justify-center gap-2">
-                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                        Ajouter au panier
-                    </button>
-                    <a href="{% url 'cart' %}" onclick="event.preventDefault(); document.querySelector('form').submit();"
+                    <a href="{% url 'commande_directe' product.pk %}"
                        class="flex-1 bg-luxe-gold text-white py-4 rounded-full font-semibold hover:bg-luxe-gold-light hover:text-luxe-dark transition-colors duration-300 flex items-center justify-center gap-2 text-center">
                         <i data-lucide="zap" class="w-5 h-5"></i>
                         Commander directement
                     </a>
+                    <button type="submit" class="flex-1 bg-luxe-dark text-white py-4 rounded-full font-semibold hover:bg-luxe-gold transition-colors duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        Ajouter au panier
+                    </button>
                 </div>
             </form>
 
