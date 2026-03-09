@@ -10,6 +10,12 @@
     <meta property="og:description" content="{{ product.nom }} à {{ product.prix_formate }}. Commandez maintenant !">
     <meta property="og:image" content="{{ product.get_image_url }}">
     <meta property="og:type" content="product">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="Abaye Elégance">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ product.nom }} — Abaye Elégance">
+    <meta name="twitter:description" content="{{ product.description|truncatewords:30 }}">
+    <meta name="twitter:image" content="{{ product.get_image_url }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
