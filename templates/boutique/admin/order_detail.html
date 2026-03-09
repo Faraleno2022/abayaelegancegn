@@ -36,17 +36,27 @@
                 </div>
 
                 <!-- Update Status -->
-                <form method="POST" action="{% url 'admin_update_status' order.pk %}" class="flex items-center gap-2">
-                    {% csrf_token %}
-                    <select name="statut" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
-                        <option value="nouvelle" {% if order.statut == 'nouvelle' %}selected{% endif %}>Nouvelle</option>
-                        <option value="en_cours" {% if order.statut == 'en_cours' %}selected{% endif %}>En cours</option>
-                        <option value="terminee" {% if order.statut == 'terminee' %}selected{% endif %}>Terminée</option>
-                    </select>
-                    <button type="submit" class="bg-luxe-dark text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-luxe-gold transition-colors">
-                        Mettre à jour
-                    </button>
-                </form>
+                <div class="flex flex-wrap items-center gap-2">
+                    <form method="POST" action="{% url 'admin_update_status' order.pk %}" class="flex items-center gap-2">
+                        {% csrf_token %}
+                        <select name="statut" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                            <option value="nouvelle" {% if order.statut == 'nouvelle' %}selected{% endif %}>Nouvelle</option>
+                            <option value="en_cours" {% if order.statut == 'en_cours' %}selected{% endif %}>En cours</option>
+                            <option value="terminee" {% if order.statut == 'terminee' %}selected{% endif %}>Terminée</option>
+                        </select>
+                        <button type="submit" class="bg-luxe-dark text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-luxe-gold transition-colors">
+                            Mettre à jour
+                        </button>
+                    </form>
+                    {% if order.statut != 'terminee' %}
+                    <form method="POST" action="{% url 'admin_mark_order_completed' order.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                            Marquer comme traitée
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
             </div>
         </div>
 

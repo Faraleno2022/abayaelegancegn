@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Sum, Count
+from django.db import transaction
 from django.views.decorators.http import require_POST
 from .models import Product, Order, OrderItem
 import json
@@ -386,6 +387,8 @@ def admin_orders(request):
 
     if statut_filter:
         orders = orders.filter(statut=statut_filter)
+    else:
+        orders = orders.exclude(statut='terminee')
 
     context = {
         'orders': orders,
@@ -418,6 +421,19 @@ def admin_update_status(request, pk):
         order.save()
         messages.success(request, f'Statut de la commande {order.numero} mis à jour.')
     return redirect('admin_order_detail', pk=pk)
+
+
+@login_required
+@require_POST
+def admin_mark_order_completed(request, pk):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    order = get_object_or_404(Order, pk=pk)
+    order.statut = 'terminee'
+    order.save(update_fields=['statut'])
+    messages.success(request, f'Commande {order.numero} marquée comme traitée.')
+    return redirect('admin_orders')
 
 
 # ============ PRODUCT MANAGEMENT ============
@@ -548,8 +564,16 @@ def admin_product_delete(request, pk):
 
     product = get_object_or_404(Product, pk=pk)
     nom = product.nom
-    product.delete()
-    messages.success(request, f'Produit "{nom}" supprimé définitivement.')
+
+    try:
+        with transaction.atomic():
+            if product.image:
+                product.image.delete(save=False)
+            product.delete()
+        messages.success(request, f'Produit "{nom}" supprimé définitivement.')
+    except Exception:
+        messages.error(request, f'Impossible de supprimer le produit "{nom}" pour le moment.')
+
     return redirect('admin_products')
 
 

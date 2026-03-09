@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin-panel/commandes/', views.admin_orders, name='admin_orders'),
     path('admin-panel/commandes/<int:pk>/', views.admin_order_detail, name='admin_order_detail'),
     path('admin-panel/commandes/<int:pk>/statut/', views.admin_update_status, name='admin_update_status'),
+    path('admin-panel/commandes/<int:pk>/terminer/', views.admin_mark_order_completed, name='admin_mark_order_completed'),
     path('admin-panel/produits/', views.admin_products, name='admin_products'),
     path('admin-panel/produits/ajouter/', views.admin_product_add, name='admin_product_add'),
     path('admin-panel/produits/<int:pk>/modifier/', views.admin_product_edit, name='admin_product_edit'),

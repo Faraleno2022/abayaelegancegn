@@ -8,7 +8,7 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
     <div>
         <h1 class="font-serif text-3xl font-bold text-luxe-dark">Commandes</h1>
-        <p class="text-gray-500 mt-1">{{ orders|length }} commande(s)</p>
+        <p class="text-gray-500 mt-1">{{ orders|length }} commande(s){% if not statut_filter %} active(s){% endif %}</p>
     </div>
 
     <!-- Status Filter -->
@@ -84,6 +84,16 @@
                         <i data-lucide="phone" class="w-4 h-4"></i>
                     </a>
                 </div>
+
+                {% if order.statut != 'terminee' %}
+                <form method="POST" action="{% url 'admin_mark_order_completed' order.pk %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                       class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                        Traiter
+                    </button>
+                </form>
+                {% endif %}
 
                 <a href="{% url 'admin_order_detail' order.pk %}"
                    class="bg-luxe-dark text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-luxe-gold transition-colors">
