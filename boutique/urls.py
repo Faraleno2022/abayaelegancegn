@@ -15,6 +15,8 @@ urlpatterns = [
     # Commande en ligne (lien partageable)
     path('commander-en-ligne/', views.commander_en_ligne, name='commander_en_ligne'),
     path('commander-en-ligne/valider/', views.commander_en_ligne_submit, name='commander_en_ligne_submit'),
+    path('commande-video/', views.commande_video, name='commande_video'),
+    path('commande-video/valider/', views.commande_video_submit, name='commande_video_submit'),
 
     # Commande directe par produit (lien partageable)
     path('commander/<int:pk>/', views.commande_directe, name='commande_directe'),

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande depuis la vidéo — Abaye Elégance</title>
+    <meta name="description" content="Envoyez directement votre commande après avoir vu la vidéo Abaye Elégance.">
+    <meta property="og:title" content="Commande vidéo — Abaye Elégance">
+    <meta property="og:description" content="Remplissez directement le formulaire de commande après avoir vu la vidéo.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static 'images/Abaye.jpg' %}">
+    <meta property="og:site_name" content="Abaye Elégance">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Commande vidéo — Abaye Elégance">
+    <meta name="twitter:description" content="Remplissez directement le formulaire de commande après avoir vu la vidéo.">
+    <meta name="twitter:image" content="{% static 'images/Abaye.jpg' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant Garamond', 'serif'],
+                        'sans': ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'luxe': {
+                            'gold': '#c8a45c',
+                            'gold-light': '#e8d5a3',
+                            'dark': '#1a1a2e',
+                            'darker': '#0f0f1a',
+                            'navy': '#16213e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .toast {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            animation: slideIn 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen flex flex-col">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="toast bg-white shadow-2xl rounded-xl px-6 py-4 flex items-center gap-3 border-l-4 {% if message.tags == 'error' %}border-red-500{% else %}border-green-500{% endif %}" onclick="this.remove()">
+        <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <header class="bg-luxe-dark text-white py-5">
+        <div class="max-w-2xl mx-auto px-4 text-center">
+            <img src="{% static 'images/Abaye.jpg' %}" alt="Abaye Elégance" class="h-14 w-14 object-cover mx-auto mb-3 rounded-full bg-white/10 p-1">
+            <h1 class="font-serif text-3xl font-bold">Commande directe</h1>
+            <p class="text-luxe-gold-light mt-2 text-sm">Vous avez déjà vu le produit dans la vidéo ? Remplissez simplement ce formulaire.</p>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-6">
+            <div class="flex items-start gap-3 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-luxe-gold/10 text-luxe-gold flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="video" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-luxe-dark">Formulaire de commande vidéo</h2>
+                    <p class="text-sm text-gray-500 mt-1">Aucune sélection de produit n'est nécessaire. Indiquez simplement le produit vu dans la vidéo.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'commande_video_submit' %}" class="space-y-5">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Produit vu dans la vidéo <span class="text-red-500">*</span></label>
+                    <input type="text" name="produit_video" required placeholder="Ex: Abaya noire, sac beige, ensemble rose..."
+                           class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Prénom et Nom <span class="text-red-500">*</span></label>
+                    <input type="text" name="prenom_nom" required placeholder="Votre nom complet"
+                           class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Téléphone / WhatsApp <span class="text-red-500">*</span></label>
+                    <input type="tel" name="telephone" required placeholder="Ex: 622 00 00 00"
+                           class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Email (optionnel)</label>
+                    <input type="email" name="email" placeholder="votre@email.com"
+                           class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse de livraison <span class="text-red-500">*</span></label>
+                    <textarea name="adresse" required rows="3" placeholder="Quartier, rue, repère..."
+                              class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Mode de paiement <span class="text-red-500">*</span></label>
+                    <select name="mode_paiement" required
+                            class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all">
+                        <option value="">— Choisir —</option>
+                        {% for value, label in payment_methods %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Détails supplémentaires (optionnel)</label>
+                    <textarea name="notes" rows="3" placeholder="Taille, couleur, quantité souhaitée, précision utile..."
+                              class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 focus:border-luxe-gold transition-all resize-none"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-luxe-gold text-luxe-dark py-4 rounded-2xl font-bold text-base hover:bg-luxe-gold-light transition-colors flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    Envoyer ma commande
+                </button>
+            </form>
+        </div>
+
+        <div class="flex items-center justify-center gap-6 text-xs text-gray-400">
+            <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Sécurisé</span>
+            <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Livraison</span>
+            <span class="flex items-center gap-1"><i data-lucide="headphones" class="w-3.5 h-3.5"></i> Support WhatsApp</span>
+        </div>
+    </main>
+
+    <footer class="bg-luxe-dark text-gray-500 text-center py-4 text-xs mt-8">
+        &copy; 2024 Abaye Elégance. Tous droits réservés.
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('.toast').forEach(t => setTimeout(() => t.remove(), 3000));
+    </script>
+</body>
+</html>

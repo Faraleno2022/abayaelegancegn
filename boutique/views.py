@@ -285,6 +285,46 @@ def commander_en_ligne_submit(request):
     return redirect(f"{reverse('order_confirmation', kwargs={'numero': order.numero})}?redirect_home=1")
 
 
+def commande_video(request):
+    context = {
+        'payment_methods': Order.PAYMENT_CHOICES,
+    }
+    return render(request, 'boutique/commande_video.html', context)
+
+
+def commande_video_submit(request):
+    if request.method != 'POST':
+        return redirect('commande_video')
+
+    prenom_nom = request.POST.get('prenom_nom', '').strip()
+    telephone = request.POST.get('telephone', '').strip()
+    email = request.POST.get('email', '').strip()
+    adresse = request.POST.get('adresse', '').strip()
+    mode_paiement = request.POST.get('mode_paiement', '')
+    notes = request.POST.get('notes', '').strip()
+    produit_video = request.POST.get('produit_video', '').strip()
+
+    if not all([prenom_nom, telephone, adresse, mode_paiement, produit_video]):
+        messages.error(request, 'Veuillez remplir tous les champs obligatoires.')
+        return redirect('commande_video')
+
+    notes_completes = f"Produit vu dans la vidéo : {produit_video}"
+    if notes:
+        notes_completes = f"{notes_completes}\n\nNotes client : {notes}"
+
+    order = Order.objects.create(
+        prenom_nom=prenom_nom,
+        telephone=telephone,
+        email=email or None,
+        adresse=adresse,
+        mode_paiement=mode_paiement,
+        notes=notes_completes,
+        total=0,
+    )
+
+    return redirect(f"{reverse('order_confirmation', kwargs={'numero': order.numero})}?redirect_home=1")
+
+
 # ============ COMMANDE DIRECTE PAR PRODUIT (lien partageable) ============
 
 def commande_directe(request, pk):
