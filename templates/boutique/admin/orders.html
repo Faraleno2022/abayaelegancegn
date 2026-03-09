@@ -74,12 +74,12 @@
                         <i data-lucide="message-circle" class="w-4 h-4"></i>
                     </a>
                     {% if order.email %}
-                    <a href="mailto:{{ order.email }}?subject=Commande {{ order.numero }} - Abaye Elégance&body=Bonjour {{ order.prenom_nom }},"
+                    <a href="mailto:{{ order.email }}"
                        class="w-9 h-9 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg flex items-center justify-center transition-all" title="Email">
                         <i data-lucide="mail" class="w-4 h-4"></i>
                     </a>
                     {% endif %}
-                    <a href="tel:{{ order.telephone|cut:' ' }}"
+                    <a href="tel:{{ order.telephone|cut:' '|cut:'-' }}"
                        class="w-9 h-9 bg-purple-50 text-purple-600 hover:bg-purple-500 hover:text-white rounded-lg flex items-center justify-center transition-all" title="Appeler">
                         <i data-lucide="phone" class="w-4 h-4"></i>
                     </a>

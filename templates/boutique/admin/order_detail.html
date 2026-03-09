@@ -141,14 +141,14 @@
                 </a>
 
                 {% if order.email %}
-                <a href="mailto:{{ order.email }}?subject=Commande {{ order.numero }} - Abaye Elégance&body=Bonjour {{ order.prenom_nom }},%0A%0AConcernant votre commande {{ order.numero }}..."
+                <a href="mailto:{{ order.email }}"
                    class="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors text-sm font-medium">
                     <i data-lucide="mail" class="w-5 h-5"></i>
                     Envoyer un email
                 </a>
                 {% endif %}
 
-                <a href="tel:{{ order.telephone|cut:' ' }}"
+                <a href="tel:{{ order.telephone|cut:' '|cut:'-' }}"
                    class="w-full flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-colors text-sm font-medium">
                     <i data-lucide="phone" class="w-5 h-5"></i>
                     Appeler le client
