@@ -2,8 +2,13 @@
 {% load static %}
 
 {% block title %}{{ product.nom }} — Abaye Elégance{% endblock %}
+{% block meta_description %}{{ product.description|truncatewords:30 }}{% endblock %}
 {% block og_title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block og_description %}{{ product.description|truncatewords:30 }}{% endblock %}
+{% block og_image %}{{ product.get_image_url }}{% endblock %}
+{% block twitter_title %}{{ product.nom }} — Abaye Elégance{% endblock %}
+{% block twitter_description %}{{ product.description|truncatewords:30 }}{% endblock %}
+{% block twitter_image %}{{ product.get_image_url }}{% endblock %}
 
 {% block content %}
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

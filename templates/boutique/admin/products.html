@@ -94,17 +94,17 @@
                         <i data-lucide="share-2" class="w-4 h-4"></i>
                     </button>
                     <div id="shareMenu-{{ product.pk }}" class="hidden absolute bottom-12 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 p-3 w-52 z-30">
-                        <p class="text-xs font-semibold text-gray-400 mb-2 px-1">Partager le formulaire</p>
+                        <p class="text-xs font-semibold text-gray-400 mb-2 px-1">Partager le produit</p>
                         <button onclick="copyProductLink('{{ request.scheme }}://{{ request.get_host }}{% url 'commande_directe' product.pk %}', this)" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                            <i data-lucide="copy" class="w-3.5 h-3.5 text-gray-400"></i> Copier le lien
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-gray-400"></i> Copier le formulaire direct
                         </button>
-                        <a href="https://wa.me/?text=Commandez%20{{ product.nom|urlencode }}%20%C3%A0%20{{ product.prix_formate|urlencode }}%20%F0%9F%9B%8D%EF%B8%8F%0A{{ request.scheme }}://{{ request.get_host }}{% url 'commande_directe' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded-lg transition-colors">
+                        <a href="https://wa.me/?text={{ product.nom|urlencode }}%20-%20{{ product.prix_formate|urlencode }}%0A{{ request.scheme }}://{{ request.get_host }}{% url 'product_detail' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded-lg transition-colors">
                             <i data-lucide="message-circle" class="w-3.5 h-3.5 text-green-500"></i> WhatsApp
                         </a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.scheme }}://{{ request.get_host }}{% url 'commande_directe' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.scheme }}://{{ request.get_host }}{% url 'product_detail' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors">
                             <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-600"></i> Facebook
                         </a>
-                        <a href="https://twitter.com/intent/tweet?text=Commandez%20{{ product.nom|urlencode }}%20%C3%A0%20{{ product.prix_formate|urlencode }}&url={{ request.scheme }}://{{ request.get_host }}{% url 'commande_directe' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 rounded-lg transition-colors">
+                        <a href="https://twitter.com/intent/tweet?text={{ product.nom|urlencode }}%20-%20{{ product.prix_formate|urlencode }}&url={{ request.scheme }}://{{ request.get_host }}{% url 'product_detail' product.pk %}" target="_blank" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 rounded-lg transition-colors">
                             <i data-lucide="twitter" class="w-3.5 h-3.5 text-gray-800"></i> X / Twitter
                         </a>
                     </div>
