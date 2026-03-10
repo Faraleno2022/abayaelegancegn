@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commande depuis la vidéo — Abaye Elégance</title>
     <meta name="description" content="Envoyez directement votre commande après avoir vu la vidéo Abaye Elégance.">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="canonical" href="{{ canonical_current_url }}">
     <meta property="og:title" content="Commande vidéo — Abaye Elégance">
     <meta property="og:description" content="Remplissez directement le formulaire de commande après avoir vu la vidéo.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:url" content="{{ canonical_current_url }}">
     <meta property="og:image" content="{% static 'images/Abaye.jpg' %}">
     <meta property="og:site_name" content="Abaye Elégance">
     <meta name="twitter:card" content="summary_large_image">

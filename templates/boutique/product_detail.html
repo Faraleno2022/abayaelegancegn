@@ -4,7 +4,7 @@
 {% block title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block meta_description %}{{ product.description|truncatewords:30 }}{% endblock %}
 {% block meta_keywords %}{{ product.nom }}, {{ product.get_categorie_display }}, Abaye Elégance, Guinée, boutique en ligne, {{ product.badge }}{% endblock %}
-{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
+{% block canonical_url %}{{ canonical_current_url }}{% endblock %}
 {% block og_title %}{{ product.nom }} — Abaye Elégance{% endblock %}
 {% block og_description %}{{ product.description|truncatewords:30 }}{% endblock %}
 {% block og_image %}{{ product.get_image_url }}{% endblock %}
@@ -29,7 +29,7 @@
         "priceCurrency": "GNF",
         "price": "{{ product.prix|floatformat:0 }}",
         "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
-        "url": "{{ request.build_absolute_uri }}"
+        "url": "{{ canonical_current_url }}"
     }
 }
 </script>

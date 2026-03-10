@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'abayaelegancegn.com',
     'www.abayaelegancegn.com',
+    'webapp-2976697.pythonanywhere.com',
     'localhost',
     '127.0.0.1',
 ]
@@ -35,7 +37,11 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://abayaelegancegn.com',
     'https://www.abayaelegancegn.com',
+    'https://webapp-2976697.pythonanywhere.com',
 ]
+
+CANONICAL_SCHEME = 'https'
+CANONICAL_DOMAIN = 'www.abayaelegancegn.com'
 
 
 # Application definition
@@ -53,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'boutique.middleware.CanonicalHostMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -73,6 +80,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'boutique.context_processors.cart_context',
+                'boutique.context_processors.seo_context',
             ],
         },
     },
@@ -83,8 +91,6 @@ WSGI_APPLICATION = 'abaye_elegance.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-import os
 
 if os.environ.get('PYTHONANYWHERE'):
     DATABASES = {

@@ -9,7 +9,7 @@
     <meta name="keywords" content="{% block meta_keywords %}abaya, élégance, mode femme, accessoires, maison, boutique en ligne, Guinée, Conakry{% endblock %}">
     <meta name="robots" content="{% block meta_robots %}index,follow{% endblock %}">
     <meta name="theme-color" content="#1a1a2e">
-    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}{{ canonical_current_url }}{% endblock %}">
     <link rel="icon" type="image/jpeg" href="{% static 'images/Abaye.jpg' %}">
     <link rel="apple-touch-icon" href="{% static 'images/Abaye.jpg' %}">
 
@@ -17,7 +17,7 @@
     <meta property="og:title" content="{% block og_title %}Abaye Elégance{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Boutique en ligne de produits premium{% endblock %}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:url" content="{{ canonical_current_url }}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/Abaye.jpg' %}{% endblock %}">
     <meta property="og:site_name" content="Abaye Elégance">
     <meta property="og:locale" content="fr_FR">
