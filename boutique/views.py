@@ -4,10 +4,12 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum, Count, F
 from django.db import transaction
 from django.views.decorators.http import require_POST
-from .models import Product, Order, OrderItem
+from django.utils import timezone
+from datetime import timedelta
+from .models import Product, Order, OrderItem, OfflineSale, StockMovement, Expense
 import json
 
 
@@ -412,6 +414,12 @@ def admin_dashboard(request):
     total_products = Product.objects.filter(actif=True).count()
     recent_orders = Order.objects.all()[:10]
 
+    # Alertes stock
+    produits_alerte = Product.objects.filter(
+        actif=True, stock__lte=F('seuil_alerte_stock')
+    ).exclude(stock=0)
+    produits_rupture = Product.objects.filter(actif=True, stock=0)
+
     context = {
         'total_orders': total_orders,
         'pending_orders': pending_orders,
@@ -421,6 +429,10 @@ def admin_dashboard(request):
         'total_revenue_formate': f"{total_revenue:,.0f} GNF".replace(",", " "),
         'total_products': total_products,
         'recent_orders': recent_orders,
+        'produits_alerte': produits_alerte,
+        'nb_produits_alerte': produits_alerte.count(),
+        'produits_rupture': produits_rupture,
+        'nb_produits_rupture': produits_rupture.count(),
     }
     return render(request, 'boutique/admin/dashboard.html', context)
 
@@ -478,9 +490,31 @@ def admin_mark_order_completed(request, pk):
         return redirect('home')
 
     order = get_object_or_404(Order, pk=pk)
-    order.statut = 'terminee'
-    order.save(update_fields=['statut'])
-    messages.success(request, f'Commande {order.numero} marquée comme traitée.')
+    if order.statut == 'terminee':
+        messages.info(request, f'Commande {order.numero} est déjà terminée.')
+        return redirect('admin_orders')
+
+    with transaction.atomic():
+        order.statut = 'terminee'
+        order.save(update_fields=['statut'])
+
+        for item in order.items.all():
+            if item.product:
+                stock_avant = item.product.stock
+                item.product.stock = max(0, item.product.stock - item.quantite)
+                item.product.save(update_fields=['stock'])
+
+                StockMovement.objects.create(
+                    produit=item.product,
+                    type_mouvement='sortie',
+                    motif='vente_en_ligne',
+                    quantite=item.quantite,
+                    stock_avant=stock_avant,
+                    stock_apres=item.product.stock,
+                    reference=f'Commande {order.numero}',
+                )
+
+    messages.success(request, f'Commande {order.numero} marquée comme traitée. Stock mis à jour.')
     return redirect('admin_orders')
 
 
@@ -630,3 +664,346 @@ def admin_logout(request):
     logout(request)
     messages.success(request, 'Déconnexion réussie.')
     return redirect('home')
+
+
+# ============ COMPTABILITÉ ============
+
+@login_required
+def admin_comptabilite(request):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    # Période par défaut : ce mois
+    periode = request.GET.get('periode', 'mois')
+    now = timezone.now()
+
+    if periode == 'jour':
+        date_debut = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        label_periode = "Aujourd'hui"
+    elif periode == 'semaine':
+        date_debut = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+        label_periode = "Cette semaine"
+    elif periode == 'mois':
+        date_debut = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        label_periode = "Ce mois"
+    elif periode == 'annee':
+        date_debut = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        label_periode = "Cette année"
+    else:
+        date_debut = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        label_periode = "Ce mois"
+
+    # Revenus en ligne (commandes terminées)
+    commandes_terminees = Order.objects.filter(statut='terminee', date_commande__gte=date_debut)
+    ca_en_ligne = commandes_terminees.aggregate(total=Sum('total'))['total'] or 0
+    nb_commandes = commandes_terminees.count()
+
+    # Coût d'achat des ventes en ligne
+    cout_achat_en_ligne = 0
+    for cmd in commandes_terminees:
+        for item in cmd.items.all():
+            if item.product:
+                cout_achat_en_ligne += item.product.prix_achat * item.quantite
+            else:
+                cout_achat_en_ligne += 0
+
+    # Ventes hors site
+    ventes_offline = OfflineSale.objects.filter(date_vente__gte=date_debut)
+    ca_hors_site = ventes_offline.aggregate(total=Sum(F('prix_vente') * F('quantite')))['total'] or 0
+    benefice_hors_site = 0
+    for v in ventes_offline:
+        benefice_hors_site += v.benefice
+    nb_ventes_offline = ventes_offline.count()
+
+    # Dépenses
+    depenses = Expense.objects.filter(date__gte=date_debut)
+    total_depenses = depenses.aggregate(total=Sum('montant'))['total'] or 0
+
+    # Calculs
+    ca_total = ca_en_ligne + ca_hors_site
+    benefice_en_ligne = ca_en_ligne - cout_achat_en_ligne
+    benefice_brut = benefice_en_ligne + benefice_hors_site
+    benefice_net = benefice_brut - total_depenses
+
+    # Dépenses par catégorie
+    depenses_par_categorie = depenses.values('categorie').annotate(
+        total=Sum('montant')
+    ).order_by('-total')
+
+    # Dernières dépenses
+    dernieres_depenses = depenses[:10]
+
+    # Valeur du stock
+    produits = Product.objects.filter(actif=True)
+    valeur_stock_achat = sum(p.prix_achat * p.stock for p in produits)
+    valeur_stock_vente = sum(p.prix * p.stock for p in produits)
+
+    def fmt(val):
+        return f"{val:,.0f} GNF".replace(",", " ")
+
+    context = {
+        'periode': periode,
+        'label_periode': label_periode,
+        'ca_en_ligne': ca_en_ligne,
+        'ca_en_ligne_f': fmt(ca_en_ligne),
+        'ca_hors_site': ca_hors_site,
+        'ca_hors_site_f': fmt(ca_hors_site),
+        'ca_total': ca_total,
+        'ca_total_f': fmt(ca_total),
+        'benefice_en_ligne': benefice_en_ligne,
+        'benefice_en_ligne_f': fmt(benefice_en_ligne),
+        'benefice_hors_site': benefice_hors_site,
+        'benefice_hors_site_f': fmt(benefice_hors_site),
+        'benefice_brut': benefice_brut,
+        'benefice_brut_f': fmt(benefice_brut),
+        'total_depenses': total_depenses,
+        'total_depenses_f': fmt(total_depenses),
+        'benefice_net': benefice_net,
+        'benefice_net_f': fmt(benefice_net),
+        'nb_commandes': nb_commandes,
+        'nb_ventes_offline': nb_ventes_offline,
+        'depenses_par_categorie': depenses_par_categorie,
+        'dernieres_depenses': dernieres_depenses,
+        'valeur_stock_achat': valeur_stock_achat,
+        'valeur_stock_achat_f': fmt(valeur_stock_achat),
+        'valeur_stock_vente': valeur_stock_vente,
+        'valeur_stock_vente_f': fmt(valeur_stock_vente),
+        'expense_categories': Expense.CATEGORY_CHOICES,
+    }
+    return render(request, 'boutique/admin/comptabilite.html', context)
+
+
+# ============ GESTION DE STOCK ============
+
+@login_required
+def admin_stock(request):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    products = Product.objects.filter(actif=True).order_by('stock')
+    filtre = request.GET.get('filtre', '')
+
+    if filtre == 'alerte':
+        products = [p for p in products if p.stock_bas]
+    elif filtre == 'rupture':
+        products = Product.objects.filter(actif=True, stock=0).order_by('nom')
+
+    produits_alerte = Product.objects.filter(
+        actif=True, stock__lte=F('seuil_alerte_stock')
+    ).count()
+    produits_rupture = Product.objects.filter(actif=True, stock=0).count()
+
+    mouvements_recents = StockMovement.objects.all()[:20]
+
+    context = {
+        'products': products,
+        'filtre': filtre,
+        'produits_alerte': produits_alerte,
+        'produits_rupture': produits_rupture,
+        'mouvements_recents': mouvements_recents,
+        'total_produits': Product.objects.filter(actif=True).count(),
+    }
+    return render(request, 'boutique/admin/stock.html', context)
+
+
+@login_required
+@require_POST
+def admin_stock_entry(request):
+    """Entrée de stock (réapprovisionnement)"""
+    if not request.user.is_staff:
+        return redirect('home')
+
+    product_id = request.POST.get('produit')
+    quantite = int(request.POST.get('quantite', 0))
+    motif = request.POST.get('motif', 'achat')
+    notes = request.POST.get('notes', '').strip()
+
+    if quantite <= 0:
+        messages.error(request, 'La quantité doit être supérieure à 0.')
+        return redirect('admin_stock')
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    with transaction.atomic():
+        stock_avant = product.stock
+        product.stock += quantite
+        product.save(update_fields=['stock'])
+
+        StockMovement.objects.create(
+            produit=product,
+            type_mouvement='entree',
+            motif=motif,
+            quantite=quantite,
+            stock_avant=stock_avant,
+            stock_apres=product.stock,
+            notes=notes,
+        )
+
+    messages.success(request, f'+{quantite} unité(s) ajoutée(s) au stock de « {product.nom} » (Stock: {product.stock})')
+    return redirect('admin_stock')
+
+
+@login_required
+@require_POST
+def admin_stock_exit(request):
+    """Sortie de stock manuelle (perte, ajustement, etc.)"""
+    if not request.user.is_staff:
+        return redirect('home')
+
+    product_id = request.POST.get('produit')
+    quantite = int(request.POST.get('quantite', 0))
+    motif = request.POST.get('motif', 'ajustement')
+    notes = request.POST.get('notes', '').strip()
+
+    if quantite <= 0:
+        messages.error(request, 'La quantité doit être supérieure à 0.')
+        return redirect('admin_stock')
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    if quantite > product.stock:
+        messages.error(request, f'Stock insuffisant. Stock actuel : {product.stock}')
+        return redirect('admin_stock')
+
+    with transaction.atomic():
+        stock_avant = product.stock
+        product.stock -= quantite
+        product.save(update_fields=['stock'])
+
+        StockMovement.objects.create(
+            produit=product,
+            type_mouvement='sortie',
+            motif=motif,
+            quantite=quantite,
+            stock_avant=stock_avant,
+            stock_apres=product.stock,
+            notes=notes,
+        )
+
+    messages.success(request, f'-{quantite} unité(s) retirée(s) du stock de « {product.nom} » (Stock: {product.stock})')
+    return redirect('admin_stock')
+
+
+# ============ VENTES HORS SITE ============
+
+@login_required
+def admin_offline_sales(request):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    ventes = OfflineSale.objects.all()
+    canal_filter = request.GET.get('canal', '')
+    if canal_filter:
+        ventes = ventes.filter(canal=canal_filter)
+
+    total_ventes = ventes.aggregate(
+        total=Sum(F('prix_vente') * F('quantite'))
+    )['total'] or 0
+    total_benefice = sum(v.benefice for v in ventes)
+
+    def fmt(val):
+        return f"{val:,.0f} GNF".replace(",", " ")
+
+    context = {
+        'ventes': ventes[:50],
+        'canal_filter': canal_filter,
+        'canaux': OfflineSale.CANAL_CHOICES,
+        'total_ventes': total_ventes,
+        'total_ventes_f': fmt(total_ventes),
+        'total_benefice': total_benefice,
+        'total_benefice_f': fmt(total_benefice),
+        'nb_ventes': ventes.count(),
+        'products': Product.objects.filter(actif=True),
+    }
+    return render(request, 'boutique/admin/offline_sales.html', context)
+
+
+@login_required
+@require_POST
+def admin_offline_sale_add(request):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    product_id = request.POST.get('produit')
+    quantite = int(request.POST.get('quantite', 1))
+    prix_vente = int(request.POST.get('prix_vente', 0))
+    canal = request.POST.get('canal', 'boutique')
+    client = request.POST.get('client', '').strip()
+    telephone_client = request.POST.get('telephone_client', '').strip()
+    notes = request.POST.get('notes', '').strip()
+
+    if quantite <= 0 or prix_vente <= 0:
+        messages.error(request, 'Quantité et prix doivent être supérieurs à 0.')
+        return redirect('admin_offline_sales')
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    with transaction.atomic():
+        sale = OfflineSale.objects.create(
+            produit=product,
+            nom_produit=product.nom,
+            quantite=quantite,
+            prix_vente=prix_vente,
+            prix_achat=product.prix_achat,
+            canal=canal,
+            client=client,
+            telephone_client=telephone_client,
+            notes=notes,
+        )
+
+        # Déduire le stock
+        stock_avant = product.stock
+        product.stock = max(0, product.stock - quantite)
+        product.save(update_fields=['stock'])
+
+        StockMovement.objects.create(
+            produit=product,
+            type_mouvement='sortie',
+            motif='vente_hors_site',
+            quantite=quantite,
+            stock_avant=stock_avant,
+            stock_apres=product.stock,
+            reference=f'Vente hors-site #{sale.pk}',
+        )
+
+    messages.success(request, f'Vente de {quantite}x « {product.nom} » enregistrée. Stock mis à jour.')
+    return redirect('admin_offline_sales')
+
+
+# ============ DÉPENSES ============
+
+@login_required
+@require_POST
+def admin_expense_add(request):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    libelle = request.POST.get('libelle', '').strip()
+    montant = int(request.POST.get('montant', 0))
+    categorie = request.POST.get('categorie', 'autre')
+    notes = request.POST.get('notes', '').strip()
+
+    if not libelle or montant <= 0:
+        messages.error(request, 'Libellé et montant sont obligatoires.')
+        return redirect('admin_comptabilite')
+
+    Expense.objects.create(
+        libelle=libelle,
+        montant=montant,
+        categorie=categorie,
+        notes=notes,
+    )
+    messages.success(request, f'Dépense « {libelle} » enregistrée.')
+    return redirect('admin_comptabilite')
+
+
+@login_required
+@require_POST
+def admin_expense_delete(request, pk):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    expense = get_object_or_404(Expense, pk=pk)
+    expense.delete()
+    messages.success(request, 'Dépense supprimée.')
+    return redirect('admin_comptabilite')

@@ -1,0 +1,156 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}Ventes hors site{% endblock %}
+{% block nav_offline %}bg-white/10 text-white{% endblock %}
+{% block mob_offline %}text-luxe-gold bg-luxe-gold/10{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="font-serif text-3xl font-bold text-luxe-dark">Ventes hors site</h1>
+    <p class="text-gray-500 mt-1">Boutique physique, WhatsApp, téléphone...</p>
+</div>
+
+<!-- KPI -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="shopping-bag" class="w-6 h-6 text-blue-500"></i>
+            </div>
+            <div>
+                <p class="font-serif text-2xl font-bold text-luxe-dark">{{ nb_ventes }}</p>
+                <p class="text-sm text-gray-500">Ventes enregistrées</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="banknote" class="w-6 h-6 text-green-500"></i>
+            </div>
+            <div>
+                <p class="font-serif text-xl font-bold text-luxe-dark">{{ total_ventes_f }}</p>
+                <p class="text-sm text-gray-500">Chiffre d'affaires</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-6 h-6 text-emerald-500"></i>
+            </div>
+            <div>
+                <p class="font-serif text-xl font-bold text-emerald-600">{{ total_benefice_f }}</p>
+                <p class="text-sm text-gray-500">Bénéfice total</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire d'ajout -->
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+    <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-luxe-gold"></i> Enregistrer une vente
+    </h3>
+    <form method="POST" action="{% url 'admin_offline_sale_add' %}">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <select name="produit" required class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30" id="produitSelect" onchange="updatePrix()">
+                <option value="">Sélectionner un produit *</option>
+                {% for p in products %}
+                <option value="{{ p.pk }}" data-prix="{{ p.prix }}">{{ p.nom }} (Stock: {{ p.stock }}) — {{ p.prix_formate }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" name="quantite" placeholder="Quantité *" required min="1" value="1" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+            <input type="number" name="prix_vente" id="prixVente" placeholder="Prix de vente unitaire (GNF) *" required min="1" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+            <select name="canal" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                {% for key, label in canaux %}
+                <option value="{{ key }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="client" placeholder="Nom du client (optionnel)" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+            <input type="text" name="telephone_client" placeholder="Téléphone client (optionnel)" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+        </div>
+        <input type="text" name="notes" placeholder="Notes (optionnel)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 mb-4">
+        <button type="submit" class="bg-luxe-gold text-luxe-dark px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-luxe-gold-light transition-colors flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Enregistrer la vente
+        </button>
+    </form>
+</div>
+
+<!-- Filtres -->
+<div class="flex flex-wrap gap-2 mb-6">
+    <a href="{% url 'admin_offline_sales' %}" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if not canal_filter %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        Tous
+    </a>
+    {% for key, label in canaux %}
+    <a href="?canal={{ key }}" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if canal_filter == key %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        {{ label }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Liste des ventes -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    {% if ventes %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Date</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Produit</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Qté</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Prix vente</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Total</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Bénéfice</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Canal</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Client</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for vente in ventes %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 text-xs text-gray-500">{{ vente.date_vente|date:"d/m/Y H:i" }}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-luxe-dark">{{ vente.nom_produit }}</td>
+                    <td class="px-6 py-4 text-center text-sm">{{ vente.quantite }}</td>
+                    <td class="px-6 py-4 text-right text-sm text-gray-600">{{ vente.prix_vente|floatformat:0 }} GNF</td>
+                    <td class="px-6 py-4 text-right text-sm font-semibold text-luxe-dark">{{ vente.total_formate }}</td>
+                    <td class="px-6 py-4 text-right text-sm font-semibold {% if vente.benefice > 0 %}text-green-600{% else %}text-red-600{% endif %}">{{ vente.benefice_formate }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full
+                            {% if vente.canal == 'boutique' %}bg-purple-100 text-purple-700
+                            {% elif vente.canal == 'whatsapp' %}bg-green-100 text-green-700
+                            {% elif vente.canal == 'telephone' %}bg-blue-100 text-blue-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ vente.get_canal_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {% if vente.client %}{{ vente.client }}{% else %}-{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <i data-lucide="store" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+        <p class="text-gray-400 font-medium">Aucune vente hors site enregistrée</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updatePrix() {
+    const select = document.getElementById('produitSelect');
+    const prixInput = document.getElementById('prixVente');
+    const option = select.options[select.selectedIndex];
+    if (option && option.dataset.prix) {
+        prixInput.value = option.dataset.prix;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,232 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}Gestion de Stock{% endblock %}
+{% block nav_stock %}bg-white/10 text-white{% endblock %}
+{% block mob_stock %}text-luxe-gold bg-luxe-gold/10{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="font-serif text-3xl font-bold text-luxe-dark">Gestion de Stock</h1>
+    <p class="text-gray-500 mt-1">Suivi des entrées, sorties et alertes de stock</p>
+</div>
+
+<!-- Alertes -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+    <a href="?filtre=" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all {% if not filtre %}ring-2 ring-luxe-gold{% endif %}">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="box" class="w-6 h-6 text-blue-500"></i>
+            </div>
+            <div>
+                <p class="font-serif text-2xl font-bold text-luxe-dark">{{ total_produits }}</p>
+                <p class="text-sm text-gray-500">Produits actifs</p>
+            </div>
+        </div>
+    </a>
+    <a href="?filtre=alerte" class="bg-white rounded-2xl p-6 shadow-sm border {% if produits_alerte > 0 %}border-amber-200 bg-amber-50{% else %}border-gray-100{% endif %} hover:shadow-md transition-all {% if filtre == 'alerte' %}ring-2 ring-amber-400{% endif %}">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-amber-600"></i>
+            </div>
+            <div>
+                <p class="font-serif text-2xl font-bold text-amber-700">{{ produits_alerte }}</p>
+                <p class="text-sm text-amber-600 font-medium">Stock bas / Alerte</p>
+            </div>
+        </div>
+    </a>
+    <a href="?filtre=rupture" class="bg-white rounded-2xl p-6 shadow-sm border {% if produits_rupture > 0 %}border-red-200 bg-red-50{% else %}border-gray-100{% endif %} hover:shadow-md transition-all {% if filtre == 'rupture' %}ring-2 ring-red-400{% endif %}">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+            </div>
+            <div>
+                <p class="font-serif text-2xl font-bold text-red-700">{{ produits_rupture }}</p>
+                <p class="text-sm text-red-600 font-medium">En rupture</p>
+            </div>
+        </div>
+    </a>
+</div>
+
+<!-- Actions rapides : Entrée et Sortie -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Entrée de stock -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
+        <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+            <i data-lucide="arrow-down-circle" class="w-5 h-5 text-green-500"></i> Entrée de stock
+        </h3>
+        <form method="POST" action="{% url 'admin_stock_entry' %}">
+            {% csrf_token %}
+            <div class="space-y-3">
+                <select name="produit" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-300">
+                    <option value="">Sélectionner un produit</option>
+                    {% for p in products %}
+                    <option value="{{ p.pk }}">{{ p.nom }} (Stock: {{ p.stock }})</option>
+                    {% endfor %}
+                </select>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" name="quantite" placeholder="Quantité *" required min="1" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-300">
+                    <select name="motif" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-300">
+                        <option value="achat">Achat / Réappro</option>
+                        <option value="retour">Retour client</option>
+                        <option value="ajustement">Ajustement</option>
+                    </select>
+                </div>
+                <input type="text" name="notes" placeholder="Notes (optionnel)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-300">
+                <button type="submit" class="w-full bg-green-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Ajouter au stock
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sortie de stock -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-100">
+        <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+            <i data-lucide="arrow-up-circle" class="w-5 h-5 text-red-500"></i> Sortie de stock
+        </h3>
+        <form method="POST" action="{% url 'admin_stock_exit' %}">
+            {% csrf_token %}
+            <div class="space-y-3">
+                <select name="produit" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-300">
+                    <option value="">Sélectionner un produit</option>
+                    {% for p in products %}
+                    <option value="{{ p.pk }}">{{ p.nom }} (Stock: {{ p.stock }})</option>
+                    {% endfor %}
+                </select>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" name="quantite" placeholder="Quantité *" required min="1" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-300">
+                    <select name="motif" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-300">
+                        <option value="ajustement">Ajustement</option>
+                        <option value="perte">Perte / Casse</option>
+                    </select>
+                </div>
+                <input type="text" name="notes" placeholder="Notes (optionnel)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-300">
+                <button type="submit" class="w-full bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="minus" class="w-4 h-4"></i> Retirer du stock
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tableau des produits et leur stock -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="p-6 border-b border-gray-100">
+        <h3 class="font-serif text-lg font-bold text-luxe-dark">
+            {% if filtre == 'alerte' %}Produits en alerte stock
+            {% elif filtre == 'rupture' %}Produits en rupture
+            {% else %}État du stock — Tous les produits{% endif %}
+        </h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Produit</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Stock</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Seuil alerte</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Statut</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Prix achat</th>
+                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Prix vente</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for product in products %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ product.get_image_url }}" alt="{{ product.nom }}" class="w-10 h-10 rounded-lg object-cover">
+                            <div>
+                                <p class="text-sm font-medium text-luxe-dark">{{ product.nom }}</p>
+                                <p class="text-xs text-gray-400">{{ product.get_categorie_display }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="font-serif text-lg font-bold {% if product.stock == 0 %}text-red-600{% elif product.stock_bas %}text-amber-600{% else %}text-luxe-dark{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center text-sm text-gray-500">{{ product.seuil_alerte_stock }}</td>
+                    <td class="px-6 py-4 text-center">
+                        {% if product.stock == 0 %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 text-red-700">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Rupture
+                        </span>
+                        {% elif product.stock_bas %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
+                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Alerte
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> OK
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right text-sm text-gray-500">{{ product.prix_achat|floatformat:0 }} GNF</td>
+                    <td class="px-6 py-4 text-right text-sm font-semibold text-luxe-dark">{{ product.prix_formate }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-400">Aucun produit trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Derniers mouvements de stock -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100">
+        <h3 class="font-serif text-lg font-bold text-luxe-dark">Derniers mouvements de stock</h3>
+    </div>
+    {% if mouvements_recents %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Date</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Produit</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Type</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Motif</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Qté</th>
+                    <th class="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Stock avant → après</th>
+                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Référence</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for m in mouvements_recents %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-3 text-xs text-gray-500">{{ m.date|date:"d/m/Y H:i" }}</td>
+                    <td class="px-6 py-3 text-sm font-medium text-luxe-dark">{{ m.produit.nom }}</td>
+                    <td class="px-6 py-3 text-center">
+                        {% if m.type_mouvement == 'entree' %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                            <i data-lucide="arrow-down" class="w-3 h-3"></i> Entrée
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                            <i data-lucide="arrow-up" class="w-3 h-3"></i> Sortie
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-center text-xs text-gray-500">{{ m.get_motif_display }}</td>
+                    <td class="px-6 py-3 text-center font-semibold {% if m.type_mouvement == 'entree' %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if m.type_mouvement == 'entree' %}+{% else %}-{% endif %}{{ m.quantite }}
+                    </td>
+                    <td class="px-6 py-3 text-center text-sm text-gray-500">{{ m.stock_avant }} → {{ m.stock_apres }}</td>
+                    <td class="px-6 py-3 text-xs text-gray-400">{{ m.reference }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+        <p class="text-gray-400 font-medium">Aucun mouvement de stock enregistré</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

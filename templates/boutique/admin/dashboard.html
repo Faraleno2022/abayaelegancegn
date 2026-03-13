@@ -180,6 +180,41 @@
     </a>
 </div>
 
+<!-- Alertes stock -->
+{% if nb_produits_rupture > 0 or nb_produits_alerte > 0 %}
+<div class="bg-white rounded-2xl shadow-sm border border-amber-200 overflow-hidden mb-10">
+    <div class="flex items-center justify-between p-6 border-b border-amber-100 bg-amber-50">
+        <h2 class="font-serif text-lg font-bold text-amber-800 flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i>
+            Alertes stock ({{ nb_produits_rupture }} rupture{% if nb_produits_rupture > 1 %}s{% endif %}, {{ nb_produits_alerte }} en alerte)
+        </h2>
+        <a href="{% url 'admin_stock' %}?filtre=alerte" class="text-sm text-amber-600 hover:underline flex items-center gap-1">
+            Gérer le stock <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+    </div>
+    <div class="divide-y divide-gray-100">
+        {% for product in produits_rupture %}
+        <div class="flex items-center justify-between px-6 py-3">
+            <div class="flex items-center gap-3">
+                <img src="{{ product.get_image_url }}" alt="" class="w-8 h-8 rounded-lg object-cover">
+                <span class="text-sm font-medium text-luxe-dark">{{ product.nom }}</span>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 text-red-700">Rupture (0)</span>
+        </div>
+        {% endfor %}
+        {% for product in produits_alerte %}
+        <div class="flex items-center justify-between px-6 py-3">
+            <div class="flex items-center gap-3">
+                <img src="{{ product.get_image_url }}" alt="" class="w-8 h-8 rounded-lg object-cover">
+                <span class="text-sm font-medium text-luxe-dark">{{ product.nom }}</span>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">Stock: {{ product.stock }} / Seuil: {{ product.seuil_alerte_stock }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <!-- Recent Orders -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="flex items-center justify-between p-6 border-b border-gray-100">

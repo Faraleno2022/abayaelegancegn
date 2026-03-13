@@ -71,13 +71,22 @@
 
                     <div class="hidden md:flex items-center gap-4">
                         <a href="{% url 'admin_dashboard' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_dashboard %}{% endblock %}">
-                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Tableau de bord
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                         </a>
                         <a href="{% url 'admin_orders' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_orders %}{% endblock %}">
                             <i data-lucide="package" class="w-4 h-4"></i> Commandes
                         </a>
                         <a href="{% url 'admin_products' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_products %}{% endblock %}">
                             <i data-lucide="box" class="w-4 h-4"></i> Produits
+                        </a>
+                        <a href="{% url 'admin_stock' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_stock %}{% endblock %}">
+                            <i data-lucide="warehouse" class="w-4 h-4"></i> Stock
+                        </a>
+                        <a href="{% url 'admin_comptabilite' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_compta %}{% endblock %}">
+                            <i data-lucide="calculator" class="w-4 h-4"></i> Comptabilité
+                        </a>
+                        <a href="{% url 'admin_offline_sales' %}" class="text-sm text-gray-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 transition-all {% block nav_offline %}{% endblock %}">
+                            <i data-lucide="store" class="w-4 h-4"></i> Ventes hors site
                         </a>
                     </div>
                 </div>
@@ -98,15 +107,24 @@
 
     <!-- Mobile Nav -->
     <div class="md:hidden bg-white border-b border-gray-200">
-        <div class="flex items-center gap-2 px-4 py-2">
-            <a href="{% url 'admin_dashboard' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_dashboard %}text-gray-500{% endblock %}">
+        <div class="flex items-center gap-1 px-2 py-2 overflow-x-auto">
+            <a href="{% url 'admin_dashboard' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_dashboard %}text-gray-500{% endblock %}">
                 <i data-lucide="layout-dashboard" class="w-4 h-4 mx-auto mb-1"></i> Dashboard
             </a>
-            <a href="{% url 'admin_orders' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_orders %}text-gray-500{% endblock %}">
+            <a href="{% url 'admin_orders' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_orders %}text-gray-500{% endblock %}">
                 <i data-lucide="package" class="w-4 h-4 mx-auto mb-1"></i> Commandes
             </a>
-            <a href="{% url 'admin_products' %}" class="flex-1 text-center text-xs font-medium py-2 rounded-lg {% block mob_products %}text-gray-500{% endblock %}">
+            <a href="{% url 'admin_products' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_products %}text-gray-500{% endblock %}">
                 <i data-lucide="box" class="w-4 h-4 mx-auto mb-1"></i> Produits
+            </a>
+            <a href="{% url 'admin_stock' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_stock %}text-gray-500{% endblock %}">
+                <i data-lucide="warehouse" class="w-4 h-4 mx-auto mb-1"></i> Stock
+            </a>
+            <a href="{% url 'admin_comptabilite' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_compta %}text-gray-500{% endblock %}">
+                <i data-lucide="calculator" class="w-4 h-4 mx-auto mb-1"></i> Compta
+            </a>
+            <a href="{% url 'admin_offline_sales' %}" class="flex-shrink-0 text-center text-xs font-medium py-2 px-2 rounded-lg {% block mob_offline %}text-gray-500{% endblock %}">
+                <i data-lucide="store" class="w-4 h-4 mx-auto mb-1"></i> Ventes
             </a>
         </div>
     </div>

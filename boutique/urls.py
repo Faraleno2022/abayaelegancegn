@@ -34,4 +34,14 @@ urlpatterns = [
     path('admin-panel/produits/<int:pk>/modifier/', views.admin_product_edit, name='admin_product_edit'),
     path('admin-panel/produits/<int:pk>/supprimer/', views.admin_product_delete, name='admin_product_delete'),
     path('admin-panel/logout/', views.admin_logout, name='admin_logout'),
+
+    # Comptabilité & Stock
+    path('admin-panel/comptabilite/', views.admin_comptabilite, name='admin_comptabilite'),
+    path('admin-panel/stock/', views.admin_stock, name='admin_stock'),
+    path('admin-panel/stock/entree/', views.admin_stock_entry, name='admin_stock_entry'),
+    path('admin-panel/stock/sortie/', views.admin_stock_exit, name='admin_stock_exit'),
+    path('admin-panel/ventes-hors-site/', views.admin_offline_sales, name='admin_offline_sales'),
+    path('admin-panel/ventes-hors-site/ajouter/', views.admin_offline_sale_add, name='admin_offline_sale_add'),
+    path('admin-panel/depenses/ajouter/', views.admin_expense_add, name='admin_expense_add'),
+    path('admin-panel/depenses/<int:pk>/supprimer/', views.admin_expense_delete, name='admin_expense_delete'),
 ]

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 import uuid
 
 
@@ -25,6 +26,14 @@ class Product(models.Model):
     badge = models.CharField(max_length=20, choices=BADGE_CHOICES, blank=True, default='')
     note = models.IntegerField(default=5, choices=[(i, f'{i} étoile(s)') for i in range(1, 6)])
     stock = models.IntegerField(default=10)
+    prix_achat = models.DecimalField(
+        max_digits=12, decimal_places=0, default=0,
+        verbose_name="Prix d'achat", help_text="Prix d'achat en GNF (pour calcul du bénéfice)"
+    )
+    seuil_alerte_stock = models.IntegerField(
+        default=3, verbose_name="Seuil alerte stock",
+        help_text="Alerte si le stock descend en dessous de ce seuil"
+    )
     date_ajout = models.DateTimeField(auto_now_add=True)
     actif = models.BooleanField(default=True)
 
@@ -42,6 +51,14 @@ class Product(models.Model):
         if self.image_url:
             return self.image_url
         return '/static/img/placeholder.jpg'
+
+    @property
+    def benefice_unitaire(self):
+        return self.prix - self.prix_achat
+
+    @property
+    def stock_bas(self):
+        return self.stock <= self.seuil_alerte_stock
 
     @property
     def prix_formate(self):
@@ -111,3 +128,131 @@ class OrderItem(models.Model):
     @property
     def sous_total_formate(self):
         return f"{self.sous_total:,.0f} GNF".replace(",", " ")
+
+
+class OfflineSale(models.Model):
+    CANAL_CHOICES = [
+        ('boutique', 'Boutique physique'),
+        ('whatsapp', 'WhatsApp'),
+        ('telephone', 'Téléphone'),
+        ('autre', 'Autre'),
+    ]
+
+    produit = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, null=True, related_name='ventes_offline'
+    )
+    nom_produit = models.CharField(max_length=200, verbose_name="Nom du produit")
+    quantite = models.IntegerField(default=1)
+    prix_vente = models.DecimalField(
+        max_digits=12, decimal_places=0, verbose_name="Prix de vente unitaire"
+    )
+    prix_achat = models.DecimalField(
+        max_digits=12, decimal_places=0, default=0, verbose_name="Prix d'achat unitaire"
+    )
+    canal = models.CharField(
+        max_length=20, choices=CANAL_CHOICES, default='boutique', verbose_name="Canal de vente"
+    )
+    client = models.CharField(max_length=200, blank=True, verbose_name="Nom du client")
+    telephone_client = models.CharField(
+        max_length=20, blank=True, verbose_name="Téléphone client"
+    )
+    notes = models.TextField(blank=True, verbose_name="Notes")
+    date_vente = models.DateTimeField(auto_now_add=True, verbose_name="Date de vente")
+
+    class Meta:
+        ordering = ['-date_vente']
+        verbose_name = 'Vente hors site'
+        verbose_name_plural = 'Ventes hors site'
+
+    def __str__(self):
+        return f"{self.quantite}x {self.nom_produit} ({self.get_canal_display()})"
+
+    def save(self, *args, **kwargs):
+        if self.produit and not self.nom_produit:
+            self.nom_produit = self.produit.nom
+        if self.produit and not self.prix_achat:
+            self.prix_achat = self.produit.prix_achat
+        super().save(*args, **kwargs)
+
+    @property
+    def total(self):
+        return self.prix_vente * self.quantite
+
+    @property
+    def benefice(self):
+        return (self.prix_vente - self.prix_achat) * self.quantite
+
+    @property
+    def total_formate(self):
+        return f"{self.total:,.0f} GNF".replace(",", " ")
+
+    @property
+    def benefice_formate(self):
+        return f"{self.benefice:,.0f} GNF".replace(",", " ")
+
+
+class StockMovement(models.Model):
+    TYPE_CHOICES = [
+        ('entree', 'Entrée'),
+        ('sortie', 'Sortie'),
+    ]
+    MOTIF_CHOICES = [
+        ('achat', 'Achat / Réapprovisionnement'),
+        ('vente_en_ligne', 'Vente en ligne'),
+        ('vente_hors_site', 'Vente hors site'),
+        ('retour', 'Retour client'),
+        ('ajustement', 'Ajustement manuel'),
+        ('perte', 'Perte / Casse'),
+    ]
+
+    produit = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='mouvements_stock'
+    )
+    type_mouvement = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    motif = models.CharField(max_length=20, choices=MOTIF_CHOICES, default='ajustement')
+    quantite = models.IntegerField()
+    stock_avant = models.IntegerField()
+    stock_apres = models.IntegerField()
+    reference = models.CharField(
+        max_length=100, blank=True,
+        help_text="Référence commande, vente hors-site, etc."
+    )
+    notes = models.TextField(blank=True)
+    date = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name = 'Mouvement de stock'
+        verbose_name_plural = 'Mouvements de stock'
+
+    def __str__(self):
+        return f"{self.get_type_mouvement_display()} {self.quantite}x {self.produit.nom}"
+
+
+class Expense(models.Model):
+    CATEGORY_CHOICES = [
+        ('achat_stock', 'Achat de stock'),
+        ('transport', 'Transport / Livraison'),
+        ('loyer', 'Loyer'),
+        ('salaire', 'Salaire'),
+        ('marketing', 'Marketing / Publicité'),
+        ('autre', 'Autre'),
+    ]
+
+    libelle = models.CharField(max_length=200, verbose_name="Libellé")
+    montant = models.DecimalField(max_digits=14, decimal_places=0)
+    categorie = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='autre')
+    notes = models.TextField(blank=True)
+    date = models.DateTimeField(default=timezone.now, verbose_name="Date de la dépense")
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name = 'Dépense'
+        verbose_name_plural = 'Dépenses'
+
+    def __str__(self):
+        return f"{self.libelle} - {self.montant:,.0f} GNF"
+
+    @property
+    def montant_formate(self):
+        return f"{self.montant:,.0f} GNF".replace(",", " ")

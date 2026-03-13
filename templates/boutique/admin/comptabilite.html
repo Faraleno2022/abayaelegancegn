@@ -1,0 +1,180 @@
+{% extends 'boutique/admin/base_admin.html' %}
+
+{% block title %}Comptabilité{% endblock %}
+{% block nav_compta %}bg-white/10 text-white{% endblock %}
+{% block mob_compta %}text-luxe-gold bg-luxe-gold/10{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="font-serif text-3xl font-bold text-luxe-dark">Comptabilité</h1>
+    <p class="text-gray-500 mt-1">Suivi financier — {{ label_periode }}</p>
+</div>
+
+<!-- Filtres de période -->
+<div class="flex flex-wrap gap-2 mb-8">
+    <a href="?periode=jour" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if periode == 'jour' %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        Aujourd'hui
+    </a>
+    <a href="?periode=semaine" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if periode == 'semaine' %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        Cette semaine
+    </a>
+    <a href="?periode=mois" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if periode == 'mois' %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        Ce mois
+    </a>
+    <a href="?periode=annee" class="px-4 py-2 rounded-xl text-sm font-medium transition-all {% if periode == 'annee' %}bg-luxe-dark text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+        Cette année
+    </a>
+</div>
+
+<!-- KPI principaux -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- CA Total -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="banknote" class="w-6 h-6 text-blue-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-blue-500 bg-blue-50 px-2.5 py-1 rounded-full">CA Total</span>
+        </div>
+        <p class="font-serif text-2xl font-bold text-luxe-dark">{{ ca_total_f }}</p>
+        <p class="text-xs text-gray-400 mt-1">En ligne : {{ ca_en_ligne_f }} | Hors site : {{ ca_hors_site_f }}</p>
+    </div>
+
+    <!-- Bénéfice Brut -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-green-500 bg-green-50 px-2.5 py-1 rounded-full">Bénéfice brut</span>
+        </div>
+        <p class="font-serif text-2xl font-bold text-luxe-dark">{{ benefice_brut_f }}</p>
+        <p class="text-xs text-gray-400 mt-1">En ligne : {{ benefice_en_ligne_f }} | Hors site : {{ benefice_hors_site_f }}</p>
+    </div>
+
+    <!-- Dépenses -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="receipt" class="w-6 h-6 text-red-500"></i>
+            </div>
+            <span class="text-xs font-semibold text-red-500 bg-red-50 px-2.5 py-1 rounded-full">Dépenses</span>
+        </div>
+        <p class="font-serif text-2xl font-bold text-luxe-dark">{{ total_depenses_f }}</p>
+        <p class="text-xs text-gray-400 mt-1">{{ nb_commandes }} commandes + {{ nb_ventes_offline }} ventes hors site</p>
+    </div>
+
+    <!-- Bénéfice Net -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 {% if benefice_net >= 0 %}border-green-200{% else %}border-red-200{% endif %}">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 {% if benefice_net >= 0 %}bg-emerald-50{% else %}bg-red-50{% endif %} rounded-xl flex items-center justify-center">
+                <i data-lucide="{% if benefice_net >= 0 %}trophy{% else %}alert-triangle{% endif %}" class="w-6 h-6 {% if benefice_net >= 0 %}text-emerald-500{% else %}text-red-500{% endif %}"></i>
+            </div>
+            <span class="text-xs font-semibold {% if benefice_net >= 0 %}text-emerald-500 bg-emerald-50{% else %}text-red-500 bg-red-50{% endif %} px-2.5 py-1 rounded-full">Bénéfice net</span>
+        </div>
+        <p class="font-serif text-2xl font-bold {% if benefice_net >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">{{ benefice_net_f }}</p>
+        <p class="text-xs text-gray-400 mt-1">Bénéfice brut - Dépenses</p>
+    </div>
+</div>
+
+<!-- Valeur du stock -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-gradient-to-br from-luxe-dark to-luxe-navy rounded-2xl p-6 text-white">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                <i data-lucide="warehouse" class="w-5 h-5 text-luxe-gold"></i>
+            </div>
+            <h3 class="font-serif text-lg font-bold">Valeur du stock</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs text-gray-400 mb-1">Valeur d'achat</p>
+                <p class="font-serif text-xl font-bold text-luxe-gold">{{ valeur_stock_achat_f }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-1">Valeur de vente</p>
+                <p class="font-serif text-xl font-bold text-white">{{ valeur_stock_vente_f }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ajouter une dépense -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 class="font-serif text-lg font-bold text-luxe-dark mb-4 flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-5 h-5 text-red-500"></i> Enregistrer une dépense
+        </h3>
+        <form method="POST" action="{% url 'admin_expense_add' %}">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <input type="text" name="libelle" placeholder="Libellé *" required class="col-span-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                <input type="number" name="montant" placeholder="Montant (GNF) *" required min="1" class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                <select name="categorie" class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30">
+                    {% for key, label in expense_categories %}
+                    <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="text" name="notes" placeholder="Notes (optionnel)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-luxe-gold/30 mb-3">
+            <button type="submit" class="w-full bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Enregistrer la dépense
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Dépenses par catégorie + Dernières dépenses -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Par catégorie -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-100">
+            <h3 class="font-serif text-lg font-bold text-luxe-dark">Dépenses par catégorie</h3>
+        </div>
+        {% if depenses_par_categorie %}
+        <div class="divide-y divide-gray-100">
+            {% for dep in depenses_par_categorie %}
+            <div class="flex items-center justify-between px-6 py-4">
+                <span class="text-sm font-medium text-gray-700">
+                    {% for key, label in expense_categories %}
+                        {% if key == dep.categorie %}{{ label }}{% endif %}
+                    {% endfor %}
+                </span>
+                <span class="text-sm font-bold text-luxe-dark">{{ dep.total|floatformat:0 }} GNF</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-gray-400 text-sm">Aucune dépense enregistrée</div>
+        {% endif %}
+    </div>
+
+    <!-- Dernières dépenses -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-100">
+            <h3 class="font-serif text-lg font-bold text-luxe-dark">Dernières dépenses</h3>
+        </div>
+        {% if dernieres_depenses %}
+        <div class="divide-y divide-gray-100">
+            {% for dep in dernieres_depenses %}
+            <div class="flex items-center justify-between px-6 py-3">
+                <div>
+                    <p class="text-sm font-medium text-gray-700">{{ dep.libelle }}</p>
+                    <p class="text-xs text-gray-400">{{ dep.date|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold text-red-500">-{{ dep.montant_formate }}</span>
+                    <form method="POST" action="{% url 'admin_expense_delete' dep.pk %}" onsubmit="return confirm('Supprimer cette dépense ?')">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-300 hover:text-red-500 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-gray-400 text-sm">Aucune dépense enregistrée</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
